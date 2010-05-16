@@ -59,7 +59,7 @@ Inventory::Inventory(int glocation){
     
 }
 
-void Inventory::update(string action, int x, int y, int W_WIDTH, int W_HEIGHT){
+void Inventory::update(string action, int x, int y, int W_WIDTH, int W_HEIGHT, int xmod = 0, int ymod = 0){
     int relx = x - W_WIDTH + width;
     
     if (action == "click"){
@@ -69,15 +69,15 @@ void Inventory::update(string action, int x, int y, int W_WIDTH, int W_HEIGHT){
             
             //
             cout << relx << ", " << y << " to " <<
-            buttonarea(things[currentpage][i], 0, W_WIDTH, W_HEIGHT) <<", "<<
-            buttonarea(things[currentpage][i], 1, W_WIDTH, W_HEIGHT) <<", "<<
-            buttonarea(things[currentpage][i], 2, W_WIDTH, W_HEIGHT) <<", "<<
-            buttonarea(things[currentpage][i], 3, W_WIDTH, W_HEIGHT) <<"\n";
+            buttonarea(things[currentpage][i], 0, W_WIDTH, W_HEIGHT, xmod, ymod) <<", "<<
+            buttonarea(things[currentpage][i], 1, W_WIDTH, W_HEIGHT, xmod, ymod) <<", "<<
+            buttonarea(things[currentpage][i], 2, W_WIDTH, W_HEIGHT, xmod, ymod) <<", "<<
+            buttonarea(things[currentpage][i], 3, W_WIDTH, W_HEIGHT, xmod, ymod) <<"\n";
             
-            if (relx >= buttonarea(things[currentpage][i], 0, W_WIDTH, W_HEIGHT) &&
-                relx <= buttonarea(things[currentpage][i], 2, W_WIDTH, W_HEIGHT) &&
-                y >= buttonarea(things[currentpage][i], 1, W_WIDTH, W_HEIGHT) &&
-                y <= buttonarea(things[currentpage][i], 3, W_WIDTH, W_HEIGHT)){
+            if (relx-xmod >= buttonarea(things[currentpage][i], 0, W_WIDTH, W_HEIGHT, xmod, ymod) &&
+                relx-xmod <= buttonarea(things[currentpage][i], 2, W_WIDTH, W_HEIGHT, xmod, ymod) &&
+                y-ymod >= buttonarea(things[currentpage][i], 1, W_WIDTH, W_HEIGHT, xmod, ymod) &&
+                y-ymod <= buttonarea(things[currentpage][i], 3, W_WIDTH, W_HEIGHT, xmod, ymod)){
                 
                 buttonfunction(things[currentpage][i]);
                 
@@ -93,24 +93,26 @@ void Inventory::update(string action, int x, int y, int W_WIDTH, int W_HEIGHT){
     } // I dunno
 }
 
-void Inventory::draw(int W_WIDTH, int W_HEIGHT){
+void Inventory::draw(int W_WIDTH, int W_HEIGHT, int xmod, int ymod){
     GLfloat adarkblue[]  = {0.03, 0.15, 0.53, 1};
     GLfloat alightblue[] = {0.37, 0.65, 0.94, 1};
     glPushMatrix();
     if (active == false){
        
-            glTranslated(W_WIDTH-20, 0, 0);// 0 or 1 for z? or what?
+            glTranslated(W_WIDTH-20+xmod, 0+ymod, 0);// 0 or 1 for z? or what?
             
-            glMaterialfv(GL_FRONT, GL_DIFFUSE, adarkblue);
+            //glMaterialfv(GL_FRONT, GL_DIFFUSE, adarkblue);
             glBegin(GL_QUADS);
+            glColor4f(adarkblue[0], adarkblue[1], adarkblue[2], adarkblue[3]);
                 glVertex2f(0,0);
                 glVertex2f(20,0);
                 glVertex2f(20,W_HEIGHT);
                 glVertex2f(0,W_HEIGHT);
             glEnd();
             
-            glMaterialfv(GL_FRONT, GL_DIFFUSE, alightblue);
+            //glMaterialfv(GL_FRONT, GL_DIFFUSE, alightblue);
             glBegin(GL_LINE_LOOP);
+            glColor4f(alightblue[0], alightblue[1], alightblue[2], alightblue[3]);
                 glVertex2f(7,W_HEIGHT/2-5);
                 glVertex2f(14,W_HEIGHT/2+1);
                 glVertex2f(7,W_HEIGHT/2+7);
@@ -118,10 +120,11 @@ void Inventory::draw(int W_WIDTH, int W_HEIGHT){
             
     } else {
     
-        glTranslated(W_WIDTH-150, 0, 0);
+        glTranslated(W_WIDTH-150+xmod, 0+ymod, 0);
     
-        glMaterialfv(GL_FRONT, GL_DIFFUSE, adarkblue);
+        //glMaterialfv(GL_FRONT, GL_DIFFUSE, adarkblue);
         glBegin(GL_QUADS);
+            glColor4f(adarkblue[0], adarkblue[1], adarkblue[2], adarkblue[3]);
             glVertex2f(0,0);
             glVertex2f(150,0);
             glVertex2f(150,W_HEIGHT);
@@ -129,8 +132,9 @@ void Inventory::draw(int W_WIDTH, int W_HEIGHT){
         glEnd();
         
     
-        glMaterialfv(GL_FRONT, GL_DIFFUSE, alightblue);
+        //glMaterialfv(GL_FRONT, GL_DIFFUSE, alightblue);
         glBegin(GL_LINE_LOOP);
+            glColor4f(alightblue[0], alightblue[1], alightblue[2], alightblue[3]);
             glVertex2f(14,W_HEIGHT/2-5);
             glVertex2f(7,W_HEIGHT/2+1);
             glVertex2f(14,W_HEIGHT/2+7);
@@ -143,7 +147,7 @@ void Inventory::draw(int W_WIDTH, int W_HEIGHT){
         
         for (int i = 0; i < (int)things[currentpage].size(); i ++){
             //cout << i << "\n";
-            buttonGet(things[currentpage][i], W_WIDTH, W_HEIGHT);
+            buttonGet(things[currentpage][i], W_WIDTH, W_HEIGHT, xmod, ymod);
         }
         
     }
@@ -153,9 +157,9 @@ void Inventory::draw(int W_WIDTH, int W_HEIGHT){
 }
 
 
-void Inventory::buttonGet(int num, int W_WIDTH, int W_HEIGHT){
+void Inventory::buttonGet(int num, int W_WIDTH, int W_HEIGHT, int xmod = 0, int ymod = 0){
     //cout <<"get "<< W_WIDTH<< ", "<< W_HEIGHT << "\n";
-    buttondisplay(num, buttonarea(num, 0, W_WIDTH, W_HEIGHT), buttonarea(num, 1, W_WIDTH, W_HEIGHT));
+    buttondisplay(num, buttonarea(num, 0, W_WIDTH, W_HEIGHT, xmod, ymod), buttonarea(num, 1, W_WIDTH, W_HEIGHT, xmod, ymod));
 }
 
 void Inventory::buttondisplay(int num, int xoff, int yoff){
@@ -168,8 +172,9 @@ void Inventory::buttondisplay(int num, int xoff, int yoff){
     int angle;
     if (num==0){
         //big line
-        glMaterialfv(GL_FRONT, GL_DIFFUSE, black);
+        //glMaterialfv(GL_FRONT, GL_DIFFUSE, black);
         glBegin(GL_QUADS);
+        glColor4f(black[0], black[1], black[2], black[3]);
             glVertex2f(xoff+0,yoff+0);
             glVertex2f(xoff+100,yoff+0);
             glVertex2f(xoff+100,yoff+100);
@@ -179,8 +184,9 @@ void Inventory::buttondisplay(int num, int xoff, int yoff){
         drawLine(80, linecolour, 0, 1, 1, 0, 10+xoff, yoff+10);  
     } else if (num == 1){
         //big block
-        glMaterialfv(GL_FRONT, GL_DIFFUSE, black);
+        //glMaterialfv(GL_FRONT, GL_DIFFUSE, black);
         glBegin(GL_QUADS);
+        glColor4f(black[0], black[1], black[2], black[3]);
             glVertex2f(xoff+0,yoff+0);
             glVertex2f(xoff+100,yoff+0);
             glVertex2f(xoff+100,yoff+100);
@@ -190,15 +196,17 @@ void Inventory::buttondisplay(int num, int xoff, int yoff){
         drawBlock(80, blockcolour, 0, 10+xoff, yoff+10);
     } else if (num == 2){
         //back button
-        glMaterialfv(GL_FRONT, GL_DIFFUSE, black);
+        //glMaterialfv(GL_FRONT, GL_DIFFUSE, black);
         glBegin(GL_QUADS);
+            glColor4f(black[0], black[1], black[2], black[3]);
             glVertex2f(xoff,yoff+0);
             glVertex2f(xoff+50,yoff+0);
             glVertex2f(xoff+50,yoff+30);
             glVertex2f(xoff,yoff+30);
         glEnd();
-        glMaterialfv(GL_FRONT, GL_DIFFUSE, alightblue);
+        //glMaterialfv(GL_FRONT, GL_DIFFUSE, alightblue);
         glBegin(GL_LINE_LOOP);
+            glColor4f(alightblue[0], alightblue[1], alightblue[2], alightblue[3]);
             glVertex2f(xoff+15,yoff+2);
             glVertex2f(xoff+15,yoff+28);
             glVertex2f(xoff+3,yoff+15);
@@ -206,8 +214,8 @@ void Inventory::buttondisplay(int num, int xoff, int yoff){
             Text("Back", xoff+16, yoff+15-5, TextHeight(10));
             
     } else if (num >= 3 && num <=14){
-        glMaterialfv(GL_FRONT, GL_DIFFUSE, black);
         glBegin(GL_QUADS);
+        glColor4f(black[0], black[1], black[2], black[3]);
             glVertex2f(xoff-2,yoff-2);
             glVertex2f(xoff+52,yoff-2);
             glVertex2f(xoff+52,yoff+52);
@@ -218,7 +226,7 @@ void Inventory::buttondisplay(int num, int xoff, int yoff){
     }
 }
 
-int Inventory::buttonarea(int num, int part, int W_WIDTH, int W_HEIGHT){
+int Inventory::buttonarea(int num, int part, int W_WIDTH, int W_HEIGHT, int xmod=0, int ymod=0){
     int arraytoreturn[4]; //x1, y1, x2, y2
     
     int adjustx = 0;
@@ -256,10 +264,18 @@ int Inventory::buttonarea(int num, int part, int W_WIDTH, int W_HEIGHT){
     } else if (num >= 3 && num <=14){
         arraytoreturn[0] = adjustx;
         arraytoreturn[1] = adjusty;
-        arraytoreturn[2] = adjustx+60;
-        arraytoreturn[3] = adjusty+60;
+        arraytoreturn[2] = adjustx+50;
+        arraytoreturn[3] = adjusty+50;
 
     }
+    /*glBegin(GL_LINE_LOOP);
+        glColor4f(1, 0, 0, 1);
+        glVertex2f(arraytoreturn[0],arraytoreturn[1]);
+        glVertex2f(arraytoreturn[2],arraytoreturn[1]);
+        glVertex2f(arraytoreturn[2],arraytoreturn[3]);
+        glVertex2f(arraytoreturn[0],arraytoreturn[3]);
+    glEnd();*/
+
     return arraytoreturn[part];
 }
 

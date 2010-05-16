@@ -47,14 +47,14 @@ class Inventory {
         
         Inventory(int glocation);
         
-        void update(string action, int x, int y, int W_WIDTH, int W_HEIGHT);
+        void update(string action, int x, int y, int W_WIDTH, int W_HEIGHT, int xmod, int ymod);
         
-        void draw(int W_WIDTH, int W_HEIGHT);
+        void draw(int W_WIDTH, int W_HEIGHT, int xmod, int ymod);
         
-        void buttonGet(int num, int W_WIDTH, int W_HEIGHT);
+        void buttonGet(int num, int W_WIDTH, int W_HEIGHT, int xmod, int ymod);
         
         void buttondisplay(int num, int xoff, int yoff);
-        int buttonarea(int num, int part, int W_WIDTH, int W_HEIGHT);
+        int buttonarea(int num, int part, int W_WIDTH, int W_HEIGHT, int xmod, int ymod);
         void buttonfunction(int num);
 };
 #endif
