@@ -33,6 +33,10 @@ int HEIGHT = 60;
 int W_WIDTH = 800;
 int W_HEIGHT= 600;
 
+int cameraxmod = 0;
+int cameraymod = 0;
+int scrollamount = TILESIZE/2;
+
 RtMidiOut::RtMidiOut *midiout = new RtMidiOut::RtMidiOut();
 
 
@@ -52,7 +56,18 @@ map <string, int> note;
 
 
 
-
+/*string tostring(int number){
+    string s;
+    stringstream out;
+    out << number;
+    return out.str();
+}*/
+string ftostring(float number){
+    string s;
+    stringstream out;
+    out << number;
+    return out.str();
+}
 float deg(float rads){
     return rads * 180/PI;
 }
@@ -198,6 +213,11 @@ class Ball {
                 //cout << bid << " not ded!" << "\n";
             }
                 
+        }
+        
+        void kill(){
+            ded = 1;
+            ballz --;
         }
         
         bool isded(){
@@ -430,10 +450,10 @@ class Storage {
 Storage storage = Storage();
 
 
-struct Background {
+/*struct Background {
     //lol hi
     public:
-        int draw(){
+        void draw(){
             //cout << "background\n";
             glPushMatrix();
                 glTranslated(0,0,0);
@@ -446,10 +466,9 @@ struct Background {
                             glVertex2f(0, W_HEIGHT);
                         glEnd();
             glPopMatrix();
-            return 0;
         }
 };
-Background background = Background();
+Background background = Background();*/
 
 
 
@@ -493,7 +512,10 @@ class Tile {
         //let's just store it in sodding strings.
         string emitter;
         int hitstodestroy;
+        int maxhitstodestroy;
         bool ghost;
+        
+        float glow[3];
         
         string extra;
         
@@ -511,6 +533,14 @@ class Tile {
             extra = sextra;
             
             hitstodestroy = shits;
+            maxhitstodestroy = shits;
+            
+            if (hitstodestroy != 0){
+                glow[0] = 0.0;
+                glow[1] = 1.0;
+                glow[2] = 0.0;
+            }
+            
             ghost = sghost;
             
             //decided by type and shit later
@@ -593,6 +623,21 @@ class Tile {
                 } else {
                     hitstodestroy--;
                 }
+            }
+        }
+        
+        void hitGlow(){
+            float hit = (hitstodestroy+0.0)/(maxhitstodestroy+0.0);
+            
+            if (hit == 0.5){
+                glow[0] = 1;
+                glow[1] = 1;
+            } else if (hit > 0.5){
+                glow[1] = 1;
+                glow[0] = ((1-hit)*2);
+            } else {
+                glow[0] = 1;
+                glow[1] = hit*2 -0.2;
             }
         }
         
@@ -708,11 +753,16 @@ class Tile {
                             
                             if (!ghost){
                                 ball->hit();
+                                hitGlow();
                                 if (ballpos[3] >= ballpos[2]){//going faster in y than x
                                 //NOTE: can probably do this better somehow, what if it's flying sideways..?
                                     ball->setPos(ballpos[0], ballpos[1],   ballpos[2], -(ballpos[3]+0.01) );
                                 } else {
                                     ball->setPos(ballpos[0], ballpos[1],   -(ballpos[2]+0.01), ballpos[3] );
+                                }  
+                                
+                                if (func == 2){
+                                    ball->kill();
                                 }
                             }
                             
@@ -749,10 +799,18 @@ class Tile {
                     case 1:
                         //line
                         drawLine(TILESIZE, temp, coords[0], coords[1], coords[2], coords[3]);
+                        //if (hitstodestroy != 0){
+                            //drawLineGlow(TILESIZE, 1,1,1, coords[0], coords[1], coords[2], coords[3]);
+                        //}
                         break;
                     case 2:
                         //block
+                        if (hitstodestroy != 0){
+                            drawBlockGlow(TILESIZE, glow[0], glow[1], glow[2]);
+                        }
                         drawBlock(TILESIZE, temp, func);
+                        
+                        //Text(ftostring(glow[0])+" "+ftostring(glow[1]), 0, 0);
                         break;
                     default:
                         drawSomething(TILESIZE, drk);
@@ -796,7 +854,7 @@ class Map {
                     if (i == 10 && j == 20){
                         tiles[i].push_back(Tile(uid, i, j, 1, 0, "0", 0, false)); //static line
                     } else if (i == 4 && j == 20){
-                        tiles[i].push_back(Tile(uid, i, j, 2, 0, "0", 0, false)); //static block
+                        tiles[i].push_back(Tile(uid, i, j, 2, 0, "0", 20, false)); //static block
                     } else if (i == 10 && j == 25){
                         tiles[i].push_back(Tile(uid, i, j, 2, 3, "E4", 0, true));// changer block
             
@@ -895,37 +953,21 @@ void draw() {
     // Push the current matrix stack
     glPushMatrix();
     // Defines a viewing transformation
-    gluLookAt (camerax, cameray, cameraz,
-               camerax, cameray, cameraz - 20,
+    gluLookAt (camerax+cameraxmod, cameray+cameraymod, cameraz,
+               camerax+cameraxmod, cameray+cameraymod, cameraz - 20,
                0.0, 1.0, 0.0);
 
 
-//    glMaterialfv(GL_FRONT, GL_SHININESS, map.tiles[i][j].shininess);
-
-//    GLfloat mat_diffuse[] = { 1.0, 1.0, 1.0, 0.0 };
-
-
-    GLfloat whitelight[] = {0,0,0,0.0};
-    //GLfloat diffuse[] = { 1,1,1,1};
-
-    //glLightfv(GL_LIGHT0, GL_POSITION, position);
-    //glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuse);
-    glLightfv(GL_LIGHT0, GL_AMBIENT, whitelight);
- //   glLightModelfv(GL_LIGHT_MODEL_AMBIENT, lmodel_ambient);
+    //GLfloat whitelight[] = {0,0,0,0.0};
 
 
 
-    glEnable(GL_LIGHTING);
+    //glLightfv(GL_LIGHT0, GL_AMBIENT, whitelight);
+    //glEnable(GL_LIGHTING);
 
     // Push the current matrix stack
     glPushMatrix();
-        /*GLfloat temp[] = {0, 0,
-                          0, 1};
-        glMaterialfv(GL_FRONT, GL_DIFFUSE, temp);*/
-        /*glBegin(GL_QUADS);
-            glVertex3f(camerax+10,  cameray+10,  cameraz-10);
-        glEnd();*/
-    background.draw();
+
 
     
     for (int x = 0; x < WIDTH; x ++){
@@ -960,16 +1002,16 @@ void draw() {
         }
     }
     
-    invent.draw(W_WIDTH, W_HEIGHT);
+    invent.draw(W_WIDTH, W_HEIGHT, cameraxmod, cameraymod);
     
-    Text("abcdefghijklmnopqrstuvwxyz 1234567890 # $", 0,0, TILESIZE/10.0); // $ = flat, maybe could use unicode I guess
+    Text("abcdefghijklmnopqrstuvwxyz 1234567890 # $", 0+cameraxmod,0+cameraymod, TILESIZE/10.0); // $ = flat, maybe could use unicode I guess
     
     string textfps = "fps ";
     stringstream out;
     out << fps;
     textfps+= out.str();
     //cout << textfps<< fps<< "\n";
-    Text(textfps, 0, W_HEIGHT-20, 2);
+    Text(textfps, 0+cameraxmod, (W_HEIGHT-20+cameraymod), 2);
     //Text(textfps, 0, 20, 2);
     
     /*// none of this works.
@@ -1067,16 +1109,18 @@ void Mouse(int button, int state, int x, int y){
     
     //nurr this only works on button press...
     
+    
     switch (button){
         case 0:
             switch (state){
                 case 1:
                     if (!invent.active){
-                    
-                        themap.change(x/TILESIZE,y/TILESIZE, invent.nextdown.type, invent.nextdown.func, invent.nextdown.extra);
                         
+                        if (((x+cameraxmod)>= 0 && (x+cameraxmod) < W_WIDTH) && ((y+cameraymod)>= 0 && (y+cameraymod) < W_HEIGHT)){
+                            themap.change((x+cameraxmod)/TILESIZE,(y+cameraymod)/TILESIZE, invent.nextdown.type, invent.nextdown.func, invent.nextdown.extra);
+                        }
                     } else {
-                        invent.update("click", x, y, W_WIDTH, W_HEIGHT);
+                        invent.update("click", x+cameraxmod, y+cameraymod, W_WIDTH, W_HEIGHT, cameraxmod, cameraymod);
                     }
                     break;
             }
@@ -1084,7 +1128,9 @@ void Mouse(int button, int state, int x, int y){
         case 2:
             switch (state){
                 case 1:
-                    themap.change(x/TILESIZE,y/TILESIZE, 0);
+                    if (((x+cameraxmod)>= 0 && (x+cameraxmod) < W_WIDTH) && ((y+cameraymod)>= 0 && (y+cameraymod) < W_HEIGHT)){
+                        themap.change((x+cameraxmod)/TILESIZE,(y+cameraymod)/TILESIZE, 0);
+                    }
                     break;
             }
             break;
@@ -1110,16 +1156,19 @@ void MouseDrag(int x, int y){
 }
 void initialise(void) {
 
-    glClearColor(0.2, 0.2, 0.7, 1);
+    glClearColor(0.0, 0.0, 0.1, 1);
     //background?
 
-    glShadeModel (GL_FLAT);
     
     glEnable(GL_LIGHTING);
     glEnable(GL_LIGHT0);
     //lightplz
     glEnable (GL_BLEND);
-    glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glAlphaFunc ( GL_GREATER, 0.1 ) ;
+    glEnable ( GL_ALPHA_TEST ) ;
+
+    glEnable(GL_COLOR_MATERIAL);
     
 
     
@@ -1150,13 +1199,40 @@ void initialise(void) {
     glutMotionFunc(MouseDrag);
     // framerate control
     glutIdleFunc(idler);
-    glutIgnoreKeyRepeat(1);
+    glutIgnoreKeyRepeat(0);
     
     
     
     glutPostRedisplay();
+
     
 }
+
+
+void SpecialKeyboard(int key, int x, int y){
+    cout << key << "\n";
+    scrollamount = TILESIZE/2;
+    switch(key) {
+        case GLUT_KEY_LEFT:
+            if (cameraxmod >=scrollamount){
+                cameraxmod -=scrollamount;
+            }
+            break;
+        case GLUT_KEY_RIGHT:
+            cameraxmod +=scrollamount;
+            break;
+        case GLUT_KEY_UP:
+            if (cameraymod >=scrollamount){
+                cameraymod -=scrollamount;
+            }
+            break;
+        case GLUT_KEY_DOWN:
+            cameraymod +=scrollamount;
+            break;
+    }
+        
+}
+
 
 void Keyboard(unsigned char key, int A, int B) {
     /*string campos = (string) ((char) camerax);
@@ -1164,6 +1240,7 @@ void Keyboard(unsigned char key, int A, int B) {
     campos << (cameray+10);
     campos << ", ";
     campos << (cameraz+20);*/
+    //camerax, cameray, cameraz
     
     switch(key) {
             // Escapes from the program by pressing 'Esc'
@@ -1171,7 +1248,6 @@ void Keyboard(unsigned char key, int A, int B) {
             fullscreen = 0;
             glutLeaveGameMode();
             initialise();
-            glutKeyboardFunc(Keyboard);
             quit();
             //gameplz=0; // Terminates the program
             break;
@@ -1262,12 +1338,14 @@ void Keyboard(unsigned char key, int A, int B) {
                 glutLeaveGameMode();
                 initialise();
                 glutKeyboardFunc(Keyboard);
+                glutSpecialFunc(SpecialKeyboard);
 
             } else {
                 fullscreen = 1;
                 glutEnterGameMode();
                 initialise();
                 glutKeyboardFunc(Keyboard);
+                glutSpecialFunc(SpecialKeyboard);
             }
             break;
 
@@ -1327,6 +1405,8 @@ int main (int argc, char * argv[]) {
     // Call the initialise function
     initialise();
     glutKeyboardFunc(Keyboard);
+    glutSpecialFunc(SpecialKeyboard);
+
     
     glutGameModeString("800x600:16@75");
     

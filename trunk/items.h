@@ -39,4 +39,8 @@ void drawBlock(int theTILESIZE, GLfloat colour[], int func, int x, int y);
 
 void drawSomething(int theTILESIZE, GLfloat colour[]);
 void drawSomething(int theTILESIZE, GLfloat colour[], int x, int y);
+
+
+void drawBlockGlow(int theTILESIZE, float r, float g, float b);
+
 #endif

@@ -32,8 +32,8 @@ void Text(string msg, int x, int y, float size = 1.0, double r=1, double g=1, do
         glTranslated(x, y, 0);
         glScalef(size, size, 0);
         GLfloat temp[] = {r, g, b, 1.0};
-        glMaterialfv(GL_FRONT, GL_DIFFUSE, temp);
-        
+        //glMaterialfv(GL_FRONT, GL_DIFFUSE, temp);
+        glColor4f(temp[0], temp[1],temp[2], temp[3]);
     for(int letter = 0; letter < msg.length(); letter++){
         glBegin(GL_QUADS);
         if (msg.at(letter) == 'a' || msg.at(letter) == 'A'){
@@ -702,9 +702,31 @@ void Text(string msg, int x, int y, float size = 1.0, double r=1, double g=1, do
             glVertex2f(3, 0);
             glVertex2f(3, 5);
             glVertex2f(2, 5);
+         }
+         
+         
+        if (msg.at(letter) == '.'){ // fullstop!
+            glVertex2f(1, 4);
+            glVertex2f(2, 4);
+            glVertex2f(2, 5);
+            glVertex2f(1, 5);
         }
+        
+        if (msg.at(letter) == '-'){
+            glVertex2f(0, 2);
+            glVertex2f(3, 2);
+            glVertex2f(3, 3);
+            glVertex2f(0, 3);
+        }
+        
+        
         glEnd();
-        glTranslated(4,0,0);
+        
+        if (msg.at(letter) == '.'){
+            glTranslated(2, 0, 0);
+        } else {
+            glTranslated(4,0,0);
+        }
     }
     glPopMatrix();
 }
