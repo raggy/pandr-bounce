@@ -13,8 +13,24 @@ using namespace std;
 
 #ifndef INVENTLOL
 #define INVENTLOL
+
+struct Tileinfo{
+    public:
+        int type;
+        int func;
+        string extra;
+        Tileinfo(){
+            type=1;
+            func=0;
+            extra="0";
+        }
+};
+
+string tostring(int number);
+
 class Inventory {
     public:
+        Tileinfo nextdown;
         bool active;
         int currentpage;
         int location; //0123 = t r b l

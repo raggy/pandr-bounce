@@ -13,7 +13,9 @@
 
 #include "RtMidi.h"
 #include "text.h"
+#ifndef ITEMS_H
 #include "items.h"
+#endif
 #include "inventory.h"
 
 #define PI 3.14159265
@@ -41,12 +43,13 @@ int maxmod = 150;
 //100 is slowish, 200 is fastish? I don't know any more.
 float gravity = 0.01;
 
-string nextdown = "0";
+
 
 GLfloat white[] = {1,1,1,1};
 GLfloat black[] = {0,0,0,1};
 
 map <string, int> note;
+
 
 
 
@@ -477,8 +480,7 @@ class Tile {
         //0 = static block.
         //1 = emitter (needs ball to emit, frequency, number, trigger)
         //2 = destroyer
-        //3 = destroyable (hits to destroy, see also; breakout)
-        //4 = modifier
+        //3 = modifier
         
         //let's give them all a unique ID.
         //maps should be read froma  file one day too plz.
@@ -491,14 +493,15 @@ class Tile {
         //let's just store it in sodding strings.
         string emitter;
         int hitstodestroy;
+        bool ghost;
         
         string extra;
         
         vector<float> coords;
 
         float r, g, b;
-
-        Tile(int& sid, int& sx, int& sy, int stype = 0, int sfunc = 0, string sextra="0"){
+        
+        Tile(int& sid, int& sx, int& sy, int stype = 0, int sfunc = 0, string sextra="0", int shits = 0, bool sghost = false){
             uid = sid;
             x = sx;
             y = sy;
@@ -506,6 +509,9 @@ class Tile {
             func = sfunc;
             
             extra = sextra;
+            
+            hitstodestroy = shits;
+            ghost = sghost;
             
             //decided by type and shit later
             if (type == 1){
@@ -578,9 +584,20 @@ class Tile {
             }
         }
         
+        void checkDestroy(){
+            if (hitstodestroy != 0){
+                if (hitstodestroy == 1){
+                    type = 0;
+                    func = 0;
+                    extra = "";
+                } else {
+                    hitstodestroy--;
+                }
+            }
+        }
         
         void checkCollision(){
-            if (type != 0){
+            if (type != 0 || ghost == false){
                 float hyp=0.0;
                 vector<float> ballpos;
                 float ang=0.0;
@@ -670,9 +687,12 @@ class Tile {
                             cout << "Vectors: "<<newxv<<" and "<<newyv<<"\n";*/
                             ball->setPos(ballpos[0], ballpos[1],   newxv, newyv );
                             
+                            checkDestroy();
                             //angle = pbang;
                         }
                     }
+                    
+                    
                     if (type == 2){
                         if (ballpos[0]*TILESIZE > (x)*TILESIZE && \
                         ballpos[0]*TILESIZE <= (x+1)*TILESIZE && \
@@ -680,8 +700,13 @@ class Tile {
                         ballpos[1]*TILESIZE <= (y+1)*TILESIZE \
                         && !(ball->justhit)){
                             //cout << "thock (" << ball->getID() << ")\n"; 
-                                
-                            if (func == 0 || func == 3){
+                            
+                            if (func == 3){
+                                ball->changenote(extra);
+                                cout << "NOTE CHANGE: " << extra << "\n";
+                            }
+                            
+                            if (!ghost){
                                 ball->hit();
                                 if (ballpos[3] >= ballpos[2]){//going faster in y than x
                                 //NOTE: can probably do this better somehow, what if it's flying sideways..?
@@ -690,10 +715,9 @@ class Tile {
                                     ball->setPos(ballpos[0], ballpos[1],   -(ballpos[2]+0.01), ballpos[3] );
                                 }
                             }
-                            if (func == 4){
-                                ball->changenote(extra);
-                                cout << "NOTE CHANGE: " << extra << "\n";
-                            }
+                            
+                            
+                            checkDestroy();
                         }
                     }
                 }
@@ -755,10 +779,10 @@ class Map {
         Map(int w, int h){
             //Tile * tiles;
         
-            int i;
-            int * p;
-            i = 2;
-            p= new (nothrow) int[i];
+            //int i;
+            //int * p;
+            //i = 2;
+            //p= new (nothrow) int[i];
             
         
             width = w;
@@ -770,14 +794,14 @@ class Map {
                 tiles.push_back(dummy);
                 for (int j = 0; j < height; j++) {
                     if (i == 10 && j == 20){
-                        tiles[i].push_back(Tile(uid, i, j, 1, 0));
+                        tiles[i].push_back(Tile(uid, i, j, 1, 0, "0", 0, false)); //static line
                     } else if (i == 4 && j == 20){
-                        tiles[i].push_back(Tile(uid, i, j, 2));
+                        tiles[i].push_back(Tile(uid, i, j, 2, 0, "0", 0, false)); //static block
                     } else if (i == 10 && j == 25){
-                        tiles[i].push_back(Tile(uid, i, j, 2, 4, "E4"));
+                        tiles[i].push_back(Tile(uid, i, j, 2, 3, "E4", 0, true));// changer block
             
                     } else {
-                        tiles[i].push_back(Tile(uid, i, j));
+                        tiles[i].push_back(Tile(uid, i, j, 0, 0, "0", 0, true));// bg/ghost
                     }
                     uid ++;
                 }
@@ -1048,7 +1072,9 @@ void Mouse(int button, int state, int x, int y){
             switch (state){
                 case 1:
                     if (!invent.active){
-                        themap.change(x/TILESIZE,y/TILESIZE, 1, 0, nextdown);
+                    
+                        themap.change(x/TILESIZE,y/TILESIZE, invent.nextdown.type, invent.nextdown.func, invent.nextdown.extra);
+                        
                     } else {
                         invent.update("click", x, y, W_WIDTH, W_HEIGHT);
                     }
@@ -1107,6 +1133,7 @@ void initialise(void) {
     
     glEnable(GL_LINE_SMOOTH);
     glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
+    
     glEnable(GL_POLYGON_SMOOTH);
     glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);
     
@@ -1163,40 +1190,64 @@ void Keyboard(unsigned char key, int A, int B) {
             break;
             
         case 'q':
-            nextdown = "0";
+            invent.nextdown.type=1;
+            invent.nextdown.func=0;
+            invent.nextdown.extra = "0";
             break;
         case 'w':
-            nextdown = "15";
+            invent.nextdown.type=1;
+            invent.nextdown.func=0;
+            invent.nextdown.extra = "15";
             break;
         case 'e':
-            nextdown = "30";
+            invent.nextdown.type=1;
+            invent.nextdown.func=0;
+            invent.nextdown.extra = "30";
             break;
         case 'r':
-            nextdown = "45";
+            invent.nextdown.type=1;
+            invent.nextdown.func=0;
+            invent.nextdown.extra = "45";
             break;
         case 't':
-            nextdown = "60";
+            invent.nextdown.type=1;
+            invent.nextdown.func=0;
+            invent.nextdown.extra = "60";
             break;
         case 'y':
-            nextdown = "75";
+            invent.nextdown.type=1;
+            invent.nextdown.func=0;
+            invent.nextdown.extra = "75";
             break;
         case 'u':
-            nextdown = "90";
+            invent.nextdown.type=1;
+            invent.nextdown.func=0;
+            invent.nextdown.extra = "90";
             break;
         case 'i':
-            nextdown = "105";
+            invent.nextdown.type=1;
+            invent.nextdown.func=0;
+            invent.nextdown.extra = "105";
             break;
         case 'o':
-            nextdown = "120";
+            invent.nextdown.type=1;
+            invent.nextdown.func=0;
+            invent.nextdown.extra = "120";
             break;
         case 'p':
-            nextdown = "135";
+            invent.nextdown.type=1;
+            invent.nextdown.func=0;
+            invent.nextdown.extra = "135";
             break;
         case '[':
-            nextdown = "150";
+            invent.nextdown.type=1;
+            invent.nextdown.func=0;
+            invent.nextdown.extra = "150";
             break;
         case ']':
-            nextdown = "165";
+            invent.nextdown.type=1;
+            invent.nextdown.func=0;
+            invent.nextdown.extra = "165";
             break;
             
         case 'h':
@@ -1244,7 +1295,7 @@ int main (int argc, char * argv[]) {
     
     
     
-    ballTexture();
+    itemsInit();
 
     storage.add( Ball(4, 10) );
     storage.add( Ball(5, 10) );

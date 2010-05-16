@@ -14,12 +14,23 @@ using namespace std;
 #ifndef ITEMS_H
 #define ITEMS_H
 
-typedef void BYTE;
-vector <GLuint> textures;
-void ballTexture();
+
+
+
+void itemsInit();
+
+int ballTexture();
+
+
+#ifndef THETEXTURESLOL
+//vector <GLuint> thetextures;
+//static int fuckingtexture = ballTexture();
+#define THETEXTURESLOL
+#endif
 
 void drawBall(double x, double y, int TILESIZE, string textnote);
 
+void drawLine(int theTILESIZE, GLfloat colour[], int angle, int thisx, int thisy);
 void drawLine(int theTILESIZE, GLfloat colour[], double x1, double y1, double x2, double y2);
 void drawLine(int theTILESIZE, GLfloat colour[], double x1, double y1, double x2, double y2, int thix, int thisy);
 

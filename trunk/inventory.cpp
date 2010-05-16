@@ -8,6 +8,7 @@
  */
 #include <OpenGL/OpenGL.h>
 #include <string>
+#include <sstream>
 #include <map>
 #include <list>
 #include <iostream>
@@ -18,7 +19,17 @@
 using namespace std;
 
 
+string tostring(int number){
+    string s;
+    stringstream out;
+    out << number;
+    return out.str();
+}
+
+
+
 Inventory::Inventory(int glocation){
+    nextdown = Tileinfo();
     currentpage = 0;
     location = glocation;
     active = true;//oh look an inventory, guess I move my mouse over there to get it.
@@ -29,11 +40,14 @@ Inventory::Inventory(int glocation){
     things[0].push_back(0);//big line
     things[0].push_back(1);//big block
     
-    things.push_back(thing);
-    things[1].push_back(2);// back to main
+    things.push_back(thing);//line
+    things[1].push_back(2);// back
+    for (int i = 3; i < 15; i++){ 
+        things[1].push_back(i);
+    }
     
     things.push_back(thing);
-    things[2].push_back(2);
+    things[2].push_back(2);//back
     
     
     /*for (int i = 2; i < 50; i++){
@@ -151,6 +165,7 @@ void Inventory::buttondisplay(int num, int xoff, int yoff){
     GLfloat blockcolour[] = {1,0,0, 1};
     GLfloat adarkblue[]  = {0.03, 0.15, 0.53, 1};
     GLfloat alightblue[] = {0.37, 0.65, 0.94, 1};
+    int angle;
     if (num==0){
         //big line
         glMaterialfv(GL_FRONT, GL_DIFFUSE, black);
@@ -189,30 +204,61 @@ void Inventory::buttondisplay(int num, int xoff, int yoff){
             glVertex2f(xoff+3,yoff+15);
         glEnd();
             Text("Back", xoff+16, yoff+15-5, TextHeight(10));
+            
+    } else if (num >= 3 && num <=14){
+        glMaterialfv(GL_FRONT, GL_DIFFUSE, black);
+        glBegin(GL_QUADS);
+            glVertex2f(xoff-2,yoff-2);
+            glVertex2f(xoff+52,yoff-2);
+            glVertex2f(xoff+52,yoff+52);
+            glVertex2f(xoff-2,yoff+52);
+        glEnd();
+        angle = 0+ ((num-3)*15);
+        drawLine(50, linecolour, angle, xoff, yoff);
     }
 }
 
 int Inventory::buttonarea(int num, int part, int W_WIDTH, int W_HEIGHT){
     int arraytoreturn[4]; //x1, y1, x2, y2
-    switch (num){
-        case (0):
-            arraytoreturn[0] = 25;
-            arraytoreturn[1] = W_HEIGHT/2-150;
-            arraytoreturn[2] = 25+100;
-            arraytoreturn[3] = W_HEIGHT/2-150+100;
-            break;
-        case (1):
-            arraytoreturn[0] = 25;
-            arraytoreturn[1] = W_HEIGHT/2+50;
-            arraytoreturn[2] = 25+100;
-            arraytoreturn[3] = W_HEIGHT/2+50+100;
-            break;
-        case (2):
-            arraytoreturn[0] = 75-25;
-            arraytoreturn[1] = 30;
-            arraytoreturn[2] = 75-25+50;
-            arraytoreturn[3] = 30+30;
-            break;
+    
+    int adjustx = 0;
+    int adjusty = 0;
+    
+    if (num >= 3 && num <=14){
+        adjustx += 25;
+        adjusty += 100;
+    }
+    
+    if (num >= 3 && num <=8){
+        adjusty += (num-3)*80;
+    }
+    
+    if (num >= 9 && num <=14){
+        adjusty += (num-9)*80;
+        adjustx += 60;
+    }
+    
+    if (num == 0){
+        arraytoreturn[0] = 25;
+        arraytoreturn[1] = W_HEIGHT/2-150;
+        arraytoreturn[2] = 25+100;
+        arraytoreturn[3] = W_HEIGHT/2-150+100;
+    } else if (num == 1){
+        arraytoreturn[0] = 25;
+        arraytoreturn[1] = W_HEIGHT/2+50;
+        arraytoreturn[2] = 25+100;
+        arraytoreturn[3] = W_HEIGHT/2+50+100;
+    } else if (num == 2){
+        arraytoreturn[0] = 75-25;
+        arraytoreturn[1] = 30;
+        arraytoreturn[2] = 75-25+50;
+        arraytoreturn[3] = 30+30;
+    } else if (num >= 3 && num <=14){
+        arraytoreturn[0] = adjustx;
+        arraytoreturn[1] = adjusty;
+        arraytoreturn[2] = adjustx+60;
+        arraytoreturn[3] = adjusty+60;
+
     }
     return arraytoreturn[part];
 }
@@ -226,5 +272,10 @@ void Inventory::buttonfunction(int num){
         currentpage = 2;
     } else if (num == 2){
         currentpage = 0; 
+    } else if (num >= 3 && num <=14){
+        nextdown.type = 1;
+        nextdown.func = 0;
+        nextdown.extra = tostring(( 0+ ((num-3)*15) ));
     }
+    
 }
