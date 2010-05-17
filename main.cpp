@@ -51,7 +51,7 @@ int ballz = 0;
 //0 for menu, 1 for game, simplolcity
 int maxmod = 150;
 //100 is slowish, 200 is fastish? I don't know any more.
-float gravity = 0.001;
+float gravity = 0.00004;
 
 
 
@@ -62,7 +62,7 @@ map <string, int> note;
 
 
 
-/*string tostring(int number){
+/*string itostring(int number){
     string s;
     stringstream out;
     out << number;
@@ -200,13 +200,22 @@ class Ball {
                 }
                 hittimer --;
             }
-            yv += gravity;
+            yv += gravity*elapsed_time;
             //xv += gravity;
             //cout << yv << "\n";
             
             x += xv * elapsed_time;
-            y += yv * elapsed_time;
+            //y += yv * elapsed_time;
             
+            /*if (yv*elapsed_time >= 1){
+                cout << yv <<", "<< yv*elapsed_time <<"\n";
+                y += 0.8;
+            } else if  (yv*elapsed_time <= -1){
+                cout << yv <<", "<< yv*elapsed_time <<"\n";
+                y += -0.8;
+            } else {*/
+                y += yv * elapsed_time;
+            //}
             //cout << bid << ": " << xv << "/" << yv << "\n";
             
             //to collision check here or in a block..?
@@ -320,6 +329,13 @@ class Ball {
         }
         double getYV(){
             return yv;
+        }
+
+        double getXV(int elapsed_time){
+            return xv * elapsed_time;
+        }
+        double getYV(int elapsed_time){
+            return yv * elapsed_time;
         }
         
         void setPos(double sx, double sy, double sxv, double syv){
@@ -647,7 +663,44 @@ class Tile {
             }
         }
         
-        void checkCollision(){
+        
+        bool gonnaCrash(int elapsed_time, float ballx, float bally, float ballxv, float ballyv){
+            bool xtrue = false, ytrue = false;
+            
+            if (ballx > x && ballx <= x+1){ //pos
+                xtrue = true;
+            }
+            if (bally > y && bally <= y+1){
+                ytrue = true;
+            }
+            
+            
+            if(ballx+(ballxv*elapsed_time) > x && ballx+(ballxv*elapsed_time) < x+1){ //pos + vel = in
+                xtrue = true;
+            }
+            if(bally+(ballyv*elapsed_time) > y && bally+(ballyv*elapsed_time) < y+1){ //pos + vel = in
+                ytrue = true;
+            }
+            
+            
+            if (xtrue == false && ((ballxv > 0 && ballx < x && ballx+(ballxv*elapsed_time) > x)|| //cp is above, cp+v is below
+                             (ballxv < 0 && ballx > x && ballx+(ballxv*elapsed_time) < x))){
+                xtrue = true;
+            }
+            if (ytrue == false && ((ballyv > 0 && bally < y && bally+(ballyv*elapsed_time) > y)|| //cp is above, cp+v is below
+                             (ballyv < 0 && bally > y && bally+(ballyv*elapsed_time) < y))){
+                ytrue = true;
+            }
+            
+            if (xtrue && ytrue){
+                return true;
+            } else {
+                return false;
+            }
+        }
+        
+        
+        void checkCollision(int elapsed_time){
             if (type != 0 || ghost == false){
                 float hyp=0.0;
                 vector<float> ballpos;
@@ -668,11 +721,40 @@ class Tile {
                     ballpos.push_back(ball->getYV());
                     
                     if (type == 1){ //if we're a line..
-                        if (ballpos[0]*TILESIZE > (x)*TILESIZE &&\
-                         ballpos[0]*TILESIZE <= (x+1)*TILESIZE &&\
-                         ballpos[1]*TILESIZE > (y)*TILESIZE &&\
-                         ballpos[1]*TILESIZE <= (y+1)*TILESIZE \
+                        /*if ( ((ballpos[0] > x &&                //current pos is inside
+                               ballpos[0] <= x+1 )||
+                             (ballpos[0]+ballpos[2] > x &&      //current pos plus velocity WILL BE inside
+                               ballpos[0]+ballpos[2] < x+1)
+                            &&
+                             ((ballpos[1] > y &&                //cp is inside
+                                ballpos[1] <= y+1) ||
+                             (ballpos[1]+ballpos[3] > y &&      //cp + v WILL BE inside
+                                ballpos[1]+ballpos[3] < y+1)
+                            ||
+                             ((ballpos[3] > 0 && ballpos[1] < y && ballpos[1]+(ballpos[3]*elapsed_time) > y)|| //cp is above, cp+v is below
+                             (ballpos[3] < 0 && ballpos[1] > y && ballpos[1]+(ballpos[3]*elapsed_time) < y))    //opposite 
+                            ||
+                             ((ballpos[2] > 0 && ballpos[0] < x && ballpos[0]+(ballpos[2]*elapsed_time) > x)|| //cp is left, cp+v is right
+                             (ballpos[2] < 0 && ballpos[0] > x && ballpos[0]+(ballpos[2]*elapsed_time) < x))   //opposite
                          && !(ball->justhit)){
+                        }*/
+                        if (!(ball->justhit) && gonnaCrash(elapsed_time, ballpos[0]-0.5, ballpos[1]-0.5, ballpos[2], ballpos[3])){
+                        
+                         /* THIS IS AWESOME FUN
+                         if ( (ballpos[0] > (x) &&\
+                               ballpos[0] <= (x+1) )||\
+                             (ballpos[0]+ballpos[2] > x &&\
+                               ballpos[0]+ballpos[2] < x+1) &&\
+                             (ballpos[1] > (y) &&\
+                                ballpos[1] <= (y+1)) ||\
+                             (ballpos[1]+ballpos[3] > y &&\
+                                ballpos[1]+ballpos[3] < y+1) \
+                         && !(ball->justhit)){
+
+                        */
+                         
+                         
+                         
                             lineangle = rad(angle-45);
                             /*if (lineangle > 90){
                                 lineangle -=360;
@@ -690,7 +772,7 @@ class Tile {
                             //BEN WAY:
                             //working now, hooray.
                             ang = atan2(ballpos[2], ballpos[3]);
-                            speed = spd(ballpos[2], ballpos[3])+gravity;
+                            speed = spd(ballpos[2], ballpos[3])+gravity*elapsed_time;
                             pbang = ang-lineangle;
                             pbang = -pbang;
                             pbang += lineangle;
@@ -745,11 +827,7 @@ class Tile {
                     
                     
                     if (type == 2){
-                        if (ballpos[0]*TILESIZE > (x)*TILESIZE && \
-                        ballpos[0]*TILESIZE <= (x+1)*TILESIZE && \
-                        ballpos[1]*TILESIZE > (y)*TILESIZE && \
-                        ballpos[1]*TILESIZE <= (y+1)*TILESIZE \
-                        && !(ball->justhit)){
+                        if (!(ball->justhit) && gonnaCrash(elapsed_time, ballpos[0], ballpos[1], ballpos[2], ballpos[3])){
                             //cout << "thock (" << ball->getID() << ")\n"; 
                             
                             if (func == 3){
@@ -760,12 +838,12 @@ class Tile {
                             if (!ghost){
                                 ball->hit();
                                 hitGlow();
-                                if (ballpos[3] >= ballpos[2]){//going faster in y than x
+                                //if (ballpos[3] >= ballpos[2]){//going faster in y than x
                                 //NOTE: can probably do this better somehow, what if it's flying sideways..?
-                                    ball->setPos(ballpos[0], ballpos[1],   ballpos[2], -(ballpos[3]+gravity) );
-                                } else {
+                                    ball->setPos(ballpos[0], ballpos[1],   -(ballpos[2]), -(ballpos[3]+gravity*elapsed_time) );
+                                /*} else {
                                     ball->setPos(ballpos[0], ballpos[1],   -(ballpos[2]+gravity), ballpos[3] );
-                                }  
+                                } */ 
                                 
                                 if (func == 2){
                                     ball->kill();
@@ -788,10 +866,10 @@ class Tile {
         }
         
         // draw the damn tile.
-        int draw(){
+        int draw(int elapsed_time){
         
             //check balls for collision here.
-            checkCollision();
+            checkCollision(elapsed_time);
             
             glPushMatrix();
                 glTranslated(x*TILESIZE, y*TILESIZE, 0);
@@ -933,6 +1011,26 @@ ___________________________________________________________*/
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 int camerax = 0;
 int cameray = 0;
 int cameraz = 0;
@@ -997,7 +1095,7 @@ void draw() {
     
     for (int x = 0; x < WIDTH; x ++){
         for (int y = 0; y < HEIGHT; y++){
-            themap.tiles[x][y].draw();
+            themap.tiles[x][y].draw(time_elapsed);
             //cout << themap.tiles[x][y].lolhi();
         }
     }
