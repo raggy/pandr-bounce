@@ -939,10 +939,29 @@ string stringlol = "Hello!";
 Map themap = Map(WIDTH, HEIGHT);
 Inventory invent = Inventory(1);//location, 0123 = t r b l;
 
-
+int time_elapsed = 0;
+int last_time = 0;
+int now = 0;
+int frame = 0;
+int sectime = 0;
 
 // Draw function void
 void draw() {
+
+
+        now = glutGet(GLUT_ELAPSED_TIME);
+        time_elapsed = now - last_time;
+        last_time = now;
+        //fps = time_elapsed;
+        frame ++;
+        sectime += time_elapsed;
+        
+        if (sectime >= 1000){
+            fps = frame;
+            frame = 0;
+            sectime = 0;
+        }
+
 
 //cout << "-----------------------------------------------------\n"
 //cout << "----- DRAW START -------------------------------------\n";
@@ -983,7 +1002,7 @@ void draw() {
     // Loop through all balls in the list
     for (ball = ball_list.begin(); ball != ball_list.end(); ) {
         // Update current ball
-        ball->update();
+        ball->update(time_elapsed);
         // If it dies
         if (ball->ded)
         {
@@ -1065,23 +1084,33 @@ void reshape(int w, int h) {
 
 
 float lastclock = 0.0;
-int frame=0,timebase=0;
-int thetime;
+//int frame=0;
+//int last_time=0;
+//int time_elapsed;
 
 void idler(void) {
     if (clock() > lastclock){
         glutPostRedisplay();
+        //fps = clock()-lastclock;
         lastclock = clock() + (CLOCKS_PER_SEC/60);
         
-        
+        /*
         frame++;
-        thetime=glutGet(GLUT_ELAPSED_TIME);
-        if (thetime - timebase > 1000) {
+        
+        
+        time_elapsed=glutGet(GLUT_ELAPSED_TIME)-last_time;
+        last_time = time_elapsed;
+        fps = time_elapsed;*/
+        
+        /*if (time_elapsed - last_time > 1000) {
             fps = frame * 1000.0/(thetime-timebase);
-            timebase = thetime;		
+            fps = 
+            last_time = time_elapsed;		
             frame = 0;
             cout << ballz << " balls\n";
-        }
+        }*/
+        
+        
     }
 }
 
