@@ -45,7 +45,7 @@ int ballz = 0;
 //0 for menu, 1 for game, simplolcity
 int maxmod = 150;
 //100 is slowish, 200 is fastish? I don't know any more.
-float gravity = 0.01;
+float gravity = 0.001;
 
 
 
@@ -181,7 +181,7 @@ class Ball {
         //just add again at a new height, simple, I suppose.
         
         
-        void update(){
+        void update(int elapsed_time){
             if (timer > 0){
                 if (timer == 1){
                     stopnoise();
@@ -198,8 +198,8 @@ class Ball {
             //xv += gravity;
             //cout << yv << "\n";
             
-            x += xv;
-            y += yv;
+            x += xv * elapsed_time;
+            y += yv * elapsed_time;
             
             //cout << bid << ": " << xv << "/" << yv << "\n";
             
@@ -684,7 +684,7 @@ class Tile {
                             //BEN WAY:
                             //working now, hooray.
                             ang = atan2(ballpos[2], ballpos[3]);
-                            speed = spd(ballpos[2], ballpos[3])+0.01;
+                            speed = spd(ballpos[2], ballpos[3])+gravity;
                             pbang = ang-lineangle;
                             pbang = -pbang;
                             pbang += lineangle;
@@ -756,9 +756,9 @@ class Tile {
                                 hitGlow();
                                 if (ballpos[3] >= ballpos[2]){//going faster in y than x
                                 //NOTE: can probably do this better somehow, what if it's flying sideways..?
-                                    ball->setPos(ballpos[0], ballpos[1],   ballpos[2], -(ballpos[3]+0.01) );
+                                    ball->setPos(ballpos[0], ballpos[1],   ballpos[2], -(ballpos[3]+gravity) );
                                 } else {
-                                    ball->setPos(ballpos[0], ballpos[1],   -(ballpos[2]+0.01), ballpos[3] );
+                                    ball->setPos(ballpos[0], ballpos[1],   -(ballpos[2]+gravity), ballpos[3] );
                                 }  
                                 
                                 if (func == 2){
