@@ -25,10 +25,12 @@ struct Tileinfo{
         int type;
         int func;
         string extra;
+        int hitstodie; 
         Tileinfo(){
             type=1;
             func=0;
             extra="0";
+            hitstodie = 0;
         }
 };
 
@@ -48,8 +50,10 @@ class Inventory {
         GLfloat blockcolour[];
         
         vector <int> thing;
-        
         vector < vector <int> > things;
+        
+        int hitstodie;
+        
         
         Inventory(int glocation);
         
