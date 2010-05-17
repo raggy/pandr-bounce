@@ -1,5 +1,11 @@
-#include <GLUT/glut.h>
-#include <OpenGL/OpenGL.h>
+#ifdef __APPLE__
+#   include <OpenGL/OpenGL.h>
+#   include <GLUT/glut.h>
+#else
+#   include <GL/gl.h>
+#   include <GL/glut.h>
+#   include <stdlib.h>
+#endif
 
 #include <iostream>
 #include <string>

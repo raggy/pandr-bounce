@@ -7,7 +7,16 @@
  *
  */
 
-#include <OpenGL/OpenGL.h>
+#ifdef __APPLE__
+#   include <OpenGL/OpenGL.h>
+#   include <OpenGL/glu.h>
+#else
+#   include <GL/gl.h>
+#   include <GL/glu.h>
+#   include <stdio.h>
+#   include <stdlib.h>
+#endif
+
 #include <string>
 #include <vector>
 using namespace std;

@@ -6,7 +6,13 @@
  *  Copyright 2010 Propellor and Ratchet Games. All rights reserved.
  *
  */
-#include <OpenGL/OpenGL.h>
+
+#ifdef __APPLE__
+#   include <OpenGL/OpenGL.h>
+#else
+#   include <GL/gl.h>
+#endif
+
 #include <string>
 #include <vector>
 using namespace std;

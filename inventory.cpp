@@ -6,7 +6,7 @@
  *  Copyright 2010 Propellor and Ratchet Games. All rights reserved.
  *
  */
-#include <OpenGL/OpenGL.h>
+
 #include <string>
 #include <sstream>
 #include <map>
