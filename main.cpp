@@ -683,14 +683,17 @@ class Tile {
             }
             
             
-            if (xtrue == false && ((ballxv > 0 && ballx < x && ballx+(ballxv*elapsed_time) > x)|| //cp is above, cp+v is below
-                             (ballxv < 0 && ballx > x && ballx+(ballxv*elapsed_time) < x))){
+            if (xtrue == false && ((ballxv > 0 && ballx < x && ballx+(ballxv*elapsed_time) >= x)|| //cp is above, cp+v is below
+                             (ballxv < 0 && ballx > x && ballx+(ballxv*elapsed_time) <= x))){
                 xtrue = true;
             }
-            if (ytrue == false && ((ballyv > 0 && bally < y && bally+(ballyv*elapsed_time) > y)|| //cp is above, cp+v is below
-                             (ballyv < 0 && bally > y && bally+(ballyv*elapsed_time) < y))){
+            if (ytrue == false && ((ballyv > 0 && bally < y && bally+(ballyv*elapsed_time) >= y)|| //cp is above, cp+v is below
+                             (ballyv < 0 && bally > y && bally+(ballyv*elapsed_time) <= y))){
                 ytrue = true;
+                //cout << "vel'd\n";
             }
+            
+            
             
             if (xtrue && ytrue){
                 return true;

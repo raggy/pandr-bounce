@@ -33,20 +33,31 @@ Inventory::Inventory(int glocation){
     location = glocation;
     active = true;//oh look an inventory, guess I move my mouse over there to get it.
     
+    hitstodie = 0;
     
-    things.push_back(thing);
+    things.push_back(thing);//initial menu.
     
     things[0].push_back(0);//big line
     things[0].push_back(1);//big block
     
-    things.push_back(thing);//line
-    things[1].push_back(2);// back
+    things.push_back(thing);//line menu.
+    things[1].push_back(2);// back button
     for (int i = 3; i < 15; i++){ 
-        things[1].push_back(i);
+        things[1].push_back(i);//line shapes
     }
     
-    things.push_back(thing);
+    things.push_back(thing);//block menu
     things[2].push_back(2);//back
+    things[2].push_back(15);//static 15
+    things[2].push_back(16);//modifier 16
+    things[2].push_back(17);//creator 17
+    things[2].push_back(18);//destroyer 18
+    
+    //static block menu
+    //hitstodie down 19
+    //hitsdie display 21
+    //hitstodie up 20
+    //static block lul 22
     
     
     /*for (int i = 2; i < 50; i++){
@@ -222,6 +233,16 @@ void Inventory::buttondisplay(int num, int xoff, int yoff){
         glEnd();
         angle = 0+ ((num-3)*15);
         drawLine(50, linecolour, angle, xoff, yoff);
+    } else if (num >= 15 && num <= 18){
+        glBegin(GL_QUADS);
+        glColor4f(black[0], black[1], black[2], black[3]);
+            glVertex2f(xoff-2,yoff-2);
+            glVertex2f(xoff+52,yoff-2);
+            glVertex2f(xoff+52,yoff+52);
+            glVertex2f(xoff-2,yoff+52);
+        glEnd();
+        drawBlock(50, blockcolour, 0, xoff, yoff);
+        
     }
 }
 
@@ -231,18 +252,25 @@ int Inventory::buttonarea(int num, int part, int W_WIDTH, int W_HEIGHT, int xmod
     int adjustx = 0;
     int adjusty = 0;
     
+    //LINE MENU stuff
     if (num >= 3 && num <=14){
         adjustx += 25;
         adjusty += 100;
     }
-    
     if (num >= 3 && num <=8){
         adjusty += (num-3)*80;
     }
-    
     if (num >= 9 && num <=14){
         adjusty += (num-9)*80;
         adjustx += 60;
+    }
+    
+    //BLOCK MENU stuff
+    if (num >= 15 && num <= 18){
+        adjustx += 25;
+        adjusty += 120;
+        
+        adjusty +=(num-15)*80;
     }
     
     if (num == 0){
@@ -265,32 +293,47 @@ int Inventory::buttonarea(int num, int part, int W_WIDTH, int W_HEIGHT, int xmod
         arraytoreturn[1] = adjusty;
         arraytoreturn[2] = adjustx+50;
         arraytoreturn[3] = adjusty+50;
-
+    } else if (num >= 15 && num <= 18){
+        
     }
-    /*glBegin(GL_LINE_LOOP);
-        glColor4f(1, 0, 0, 1);
-        glVertex2f(arraytoreturn[0],arraytoreturn[1]);
-        glVertex2f(arraytoreturn[2],arraytoreturn[1]);
-        glVertex2f(arraytoreturn[2],arraytoreturn[3]);
-        glVertex2f(arraytoreturn[0],arraytoreturn[3]);
-    glEnd();*/
-
     return arraytoreturn[part];
 }
 
 void Inventory::buttonfunction(int num){
     if (num == 0){
-        cout << "COCKS\n";
-        currentpage = 1;
+        currentpage = 1;//line menu
+        
     }else if (num == 1){
-        cout << "DICKS\n";
-        currentpage = 2;
+        currentpage = 2;//block menu
+        
     } else if (num == 2){
-        currentpage = 0; 
-    } else if (num >= 3 && num <=14){
+        currentpage = 0; //back button to main
+        
+    } else if (num >= 3 && num <=14){ // line buttons
         nextdown.type = 1;
         nextdown.func = 0;
         nextdown.extra = tostring(( 0+ ((num-3)*15) ));
+        
+    } else if (num >=15 && num <=18){ //block buttons -> submenus
+        currentpage = num- 11;//? is this right?
+        
+    } else if (num == 19){// hitstodie down
+        if (hitstodie > 0){
+            hitstodie --;
+        }
+        
+    } else if (num == 20){// hitstodie up
+        hitstodie++;
+        
+    // 21: hitstodie display has no click function, yet.
+    
+    } else if (num >= 22 && num <= 25){ // put down a static block.
+        nextdown.type = 2;
+        nextdown.hitstodie = hitstodie;
+        if (num == 22){
+            nextdown.func = 0;
+            nextdown.extra = "0";
+        }
     }
     
 }
