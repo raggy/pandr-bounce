@@ -34,6 +34,13 @@ Inventory::Inventory(int glocation){
     active = true;//oh look an inventory, guess I move my mouse over there to get it.
     
     hitstodie = 0;
+    collides = 1;
+    note = "C";
+    octave = 4;
+    instrument[9] = "Glockenspiel";
+    instrument[13] = "Xylophone";
+    instrument[1] = "Piano";
+    theinstrument = 9;
     
     things.push_back(thing);//initial menu.
     
@@ -65,36 +72,36 @@ Inventory::Inventory(int glocation){
     things[4].push_back(19);//hitstodie down 19
     things[4].push_back(21);//hitsdie display 21
     things[4].push_back(20);//hitstodie up 20
-    //collides checkbox 23
-    // change note to 24
-    //note up 25
-    //note down 26
-    // change octave 27
-    //octave up 28
-    //octave down 29
-    // change instrument 30 <- give a limited choice for now. Glock, xy, pinano, drum?
-    //instr up 31
-    //instr down 32
-    // modifier block lul 33
+    things[4].push_back(23);//collides checkbox 23
+    things[4].push_back(24);// display note 24
+    things[4].push_back(25);//note up 25
+    things[4].push_back(26);//note down 26
+    things[4].push_back(27);// display octave 27
+    things[4].push_back(28);//octave up 28
+    things[4].push_back(29);//octave down 29
+    things[4].push_back(30);// instrument display 30 <- give a limited choice for now. Glock, xy, pinano, drum?
+    things[4].push_back(31);//instr up 31
+    things[4].push_back(32);//instr down 32
+    things[4].push_back(33);// modifier block lul 33
     
-    things.push_back(thing);//modifier block menu
+    things.push_back(thing);//creator block menu
     things[5].push_back(2);//back
     things[5].push_back(19);//hitstodie down 19
     things[5].push_back(21);//hitsdie display 21
     things[5].push_back(20);//hitstodie up 20
-    //collides checkbox 23
+    things[5].push_back(23);//collides checkbox 23
     //emits display 34 <- thinking the scale should be 1s default. down is every 0.5s, up is 2s.
     //emits up 35
     //emits down 36
-    //creator block lul 37
+    things[5].push_back(37);//creator block lul 37
     
-    things.push_back(thing);//modifier block menu
+    things.push_back(thing);//destroyer block menu
     things[6].push_back(2);//back
     things[6].push_back(19);//hitstodie down 19
     things[6].push_back(21);//hitsdie display 21
     things[6].push_back(20);//hitstodie up 20
-    //collides checkbox 23
-    // destroyer block lul 38
+    things[6].push_back(23);
+    things[6].push_back(38);// destroyer block lul 38
     
     
     /*for (int i = 2; i < 50; i++){
@@ -117,11 +124,11 @@ void Inventory::update(string action, int x, int y, int W_WIDTH, int W_HEIGHT, i
                 //cout << "KLIKU"<<things[currentpage][i]<<"\n";
                 
                 //
-                cout << relx << ", " << y << " to " <<
+                /*cout << relx << ", " << y << " to " <<
                 buttonarea(things[currentpage][i], 0, W_WIDTH, W_HEIGHT, xmod, ymod) <<", "<<
                 buttonarea(things[currentpage][i], 1, W_WIDTH, W_HEIGHT, xmod, ymod) <<", "<<
                 buttonarea(things[currentpage][i], 2, W_WIDTH, W_HEIGHT, xmod, ymod) <<", "<<
-                buttonarea(things[currentpage][i], 3, W_WIDTH, W_HEIGHT, xmod, ymod) <<"\n";
+                buttonarea(things[currentpage][i], 3, W_WIDTH, W_HEIGHT, xmod, ymod) <<"\n";*/
                 
                 if (relx-xmod >= buttonarea(things[currentpage][i], 0, W_WIDTH, W_HEIGHT, xmod, ymod) &&
                     relx-xmod <= buttonarea(things[currentpage][i], 2, W_WIDTH, W_HEIGHT, xmod, ymod) &&
@@ -210,6 +217,7 @@ void Inventory::buttonGet(int num, int W_WIDTH, int W_HEIGHT, int xmod = 0, int 
 void Inventory::buttondisplay(int num, int xoff, int yoff){
             //display the button
     GLfloat black[]      = {0,0,0, 1};
+    GLfloat white[]      = {1,1,1, 1};
     GLfloat linecolour[] = {0,1,0, 1};
     GLfloat blockcolour[] = {1,0,0, 1};
     GLfloat adarkblue[]  = {0.03, 0.15, 0.53, 1};
@@ -291,7 +299,7 @@ void Inventory::buttondisplay(int num, int xoff, int yoff){
         glEnd();
         angle = 0+ ((num-3)*15);
         drawLine(50, linecolour, angle, xoff, yoff);
-    } else if (num >= 15 && num <= 18){
+    } else if ((num >= 15 && num <= 18) || num == 22 || num == 33 || num == 37 || num == 38){
         glBegin(GL_QUADS);
         glColor4f(black[0], black[1], black[2], black[3]);
             glVertex2f(xoff-0,yoff-0);
@@ -308,6 +316,8 @@ void Inventory::buttondisplay(int num, int xoff, int yoff){
             Text("Creator", xoff+12, yoff, TextHeight(10));
         } else if (num == 18){
             Text("Destroyer", xoff+4, yoff, TextHeight(10));
+        } else if (num == 22 || num == 33 || num == 37 || num == 38){
+            Text("Finalise", xoff+8, yoff, TextHeight(10));
         }
     } else if (num == 19 || num == 20){
         glBegin(GL_QUADS);
@@ -340,12 +350,128 @@ void Inventory::buttondisplay(int num, int xoff, int yoff){
         Text("Hits to destroy", xoff-10, yoff-10);
         
         if (hitstodie>=10){
-            Text(itostring(hitstodie), xoff+9, yoff+5, 3);
+            Text(itostring(hitstodie), xoff+6
+            , yoff+5, 4);
         } else if (hitstodie>0){
-            Text(itostring(hitstodie), xoff+15, yoff+5, 3);
+            Text(itostring(hitstodie), xoff+14, yoff+5, 4);
         } else {
-            Text(itostring(hitstodie), xoff+15, yoff+5, 3, alightblue);
+            Text(itostring(hitstodie), xoff+14, yoff+5, 4, alightblue);
         }
+        
+    } else if (num == 23){//collides checkbox
+        Text("Balls hit this", xoff-7, yoff-10);
+        glBegin(GL_QUADS);
+        glColor4f(black[0], black[1], black[2], black[3]);
+            glVertex2f(xoff+0,yoff+0);
+            glVertex2f(xoff+40,yoff+0);
+            glVertex2f(xoff+40,yoff+40);
+            glVertex2f(xoff+0,yoff+40);
+            
+        if (collides){
+            glColor4f(alightblue[0], alightblue[1], alightblue[2], alightblue[3]);
+            glVertex2f(xoff+40,yoff);
+            glVertex2f(xoff+40,yoff+10);
+            glVertex2f(xoff+15,yoff+40);
+            glVertex2f(xoff+15,yoff+30);
+            
+            glVertex2f(xoff,yoff+20);
+            glVertex2f(xoff+15,yoff+30);
+            glVertex2f(xoff+15,yoff+40);
+            glVertex2f(xoff,yoff+28);
+            
+            
+        } else {
+            glColor4f(1,1,1,1);
+            glVertex2f(xoff+8,yoff+2);
+            glVertex2f(xoff+40-2,yoff+40-8);
+            glVertex2f(xoff+40-8,yoff+40-2);
+            glVertex2f(xoff+2,yoff+8);
+            
+            glVertex2f(xoff+40-2,yoff+8);
+            glVertex2f(xoff+8,yoff+40-2);
+            glVertex2f(xoff+2,yoff+40-8);
+            glVertex2f(xoff+40-8,yoff+2);
+        }
+        
+        glEnd();
+        
+    } else if (num == 24){ // display note
+        glBegin(GL_QUADS);
+        glColor4f(black[0], black[1], black[2], black[3]);
+            glVertex2f(xoff+0,yoff+0);
+            glVertex2f(xoff+40,yoff+0);
+            glVertex2f(xoff+40,yoff+30);
+            glVertex2f(xoff+0,yoff+30);
+        glEnd();
+        Text("note", xoff-18, yoff+12);
+        if (note.size() == 2){
+            Text(note, xoff+6, yoff+5, 4, white);
+        } else {
+            Text(note, xoff+26, yoff+5, 4, white);
+        }
+    } else if (num == 27){ // display octave
+        glBegin(GL_QUADS);
+        glColor4f(black[0], black[1], black[2], black[3]);
+            glVertex2f(xoff+0,yoff+0);
+            glVertex2f(xoff+20,yoff+0);
+            glVertex2f(xoff+20,yoff+30);
+            glVertex2f(xoff+0,yoff+30);
+        glEnd();
+        Text("octave", xoff+22, yoff+12);
+        Text(itostring(octave), xoff+4, yoff+5, 4);
+        
+    } else if (num == 25 || num == 26 || num == 28 || num == 29){ // UP
+        glBegin(GL_QUADS);
+        glColor4f(black[0], black[1], black[2], black[3]);
+            glVertex2f(xoff+0,yoff+0);
+            glVertex2f(xoff+20,yoff+0);
+            glVertex2f(xoff+20,yoff+10);
+            glVertex2f(xoff+0,yoff+10);
+        glEnd();
+        glBegin(GL_TRIANGLES);
+        glColor4f(1,1,1,1);
+            if (num == 25 || num == 28){
+            glVertex2f(xoff+10,yoff+2);
+            glVertex2f(xoff+18,yoff+8);
+            glVertex2f(xoff+2,yoff+8);
+            } else {
+            glVertex2f(xoff+10,yoff+8);
+            glVertex2f(xoff+18,yoff+2);
+            glVertex2f(xoff+2,yoff+2);
+            }
+        glEnd();
+    } else if (num == 30){ // instrument display
+        glBegin(GL_QUADS);
+        glColor4f(black[0], black[1], black[2], black[3]);
+            glVertex2f(xoff+0,yoff+0);
+            glVertex2f(xoff+130,yoff+0);
+            glVertex2f(xoff+130,yoff+30);
+            glVertex2f(xoff+0,yoff+30);
+        glEnd();
+        Text("Sound:", xoff, yoff-6);
+        Text( instrument[theinstrument] , xoff+5, yoff+5, 2);
+        //instrument[theinstrument]
+    } else if (num == 31 || num == 32){
+        glBegin(GL_QUADS);
+            glColor4f(black[0], black[1], black[2], black[3]);
+                glVertex2f(xoff+0,yoff+0);
+                glVertex2f(xoff+60,yoff+0);
+                glVertex2f(xoff+60,yoff+20);
+                glVertex2f(xoff+0,yoff+20);
+            glEnd();
+            glBegin(GL_TRIANGLES);
+            glColor4f(1,1,1,1);
+                if (num == 31){
+                    glVertex2f(xoff+45,yoff+2);
+                    glVertex2f(xoff+45,yoff+18);
+                    glVertex2f(xoff+15,yoff+10);
+                } else {
+                    glVertex2f(xoff+15,yoff+2);
+                    glVertex2f(xoff+15,yoff+18);
+                    glVertex2f(xoff+45,yoff+10);
+                }
+        glEnd();
+
     }
 }
 
@@ -385,6 +511,21 @@ int Inventory::buttonarea(int num, int part, int W_WIDTH, int W_HEIGHT, int xmod
         if (num==20) adjustx+=66;
     }
     
+    //NOTE CHANGE stuff
+    if (num == 25 || num == 26 || num == 28 || num == 29){
+        adjustx += 60;
+        adjusty += 245;
+        if (num == 28 || num == 29) adjustx += 25;
+        if (num == 26 || num == 29) adjusty +=50;
+    }
+    
+    //INSTRUMENT stuff
+    if (num == 31 || num == 32){
+        adjustx += 10;
+        adjusty += 362;
+        adjustx += (num-31)*70;
+    }
+    
     if (num == 0){
         arraytoreturn[0] = 25;
         arraytoreturn[1] = W_HEIGHT/2-150;
@@ -420,7 +561,56 @@ int Inventory::buttonarea(int num, int part, int W_WIDTH, int W_HEIGHT, int xmod
         arraytoreturn[1] = adjusty;
         arraytoreturn[2] = adjustx+40;
         arraytoreturn[3] = adjusty+30;
+    } else if (num == 22){
+        arraytoreturn[0] = 40;
+        arraytoreturn[1] = 250;
+        arraytoreturn[2] = 40+80;
+        arraytoreturn[3] = 250+80;
+    } else if (num == 23){
+        arraytoreturn[0] = 60;
+        arraytoreturn[1] = 180;
+        arraytoreturn[2] = 60+40;
+        arraytoreturn[3] = 180+40;
+    } else if (num == 24){
+        arraytoreturn[0] = 40;
+        arraytoreturn[1] = 260;
+        arraytoreturn[2] = 40+40;
+        arraytoreturn[3] = 260+30;
+    } else if (num == 25 || num == 26 || num == 28 || num == 29){
+        arraytoreturn[0] = adjustx;
+        arraytoreturn[1] = adjusty;
+        arraytoreturn[2] = adjustx+20;
+        arraytoreturn[3] = adjusty+10;
+    } else if (num == 27){
+        arraytoreturn[0] = 85;
+        arraytoreturn[1] = 260;
+        arraytoreturn[2] = 85+20;
+        arraytoreturn[3] = 260+30;
+    } else if (num == 30){
+        arraytoreturn[0] = 10;
+        arraytoreturn[1] = 330;
+        arraytoreturn[2] = 10+130;
+        arraytoreturn[3] = 330+30;
+    } else if (num == 31 || num == 32){
+        arraytoreturn[0] = adjustx;
+        arraytoreturn[1] = adjusty;
+        arraytoreturn[2] = adjustx+60;
+        arraytoreturn[3] = adjusty+20;
+    } else if (num == 33){
+        arraytoreturn[0] = 40;
+        arraytoreturn[1] = 400;
+        arraytoreturn[2] = 40+80;
+        arraytoreturn[3] = 400+80;
     }
+    
+    glBegin(GL_LINE_LOOP);
+        glColor4f(1,0,0,1);
+        glVertex2f(arraytoreturn[0], arraytoreturn[1]);
+        glVertex2f(arraytoreturn[2], arraytoreturn[1]);
+        glVertex2f(arraytoreturn[2], arraytoreturn[3]);
+        glVertex2f(arraytoreturn[0], arraytoreturn[3]);
+    glEnd();
+    
     return arraytoreturn[part];
 }
 
@@ -451,7 +641,9 @@ void Inventory::buttonfunction(int num){
         
     } else if (num >=15 && num <=18){ //block buttons -> submenus
         currentpage = num- 12;//? is this right?
-        
+        /*for (int i = 0; i < things[currentpage].size(); i++){
+            cout << "Thing: " << things[currentpage][i] << "\n";
+        }*/
     } else if (num == 19){// hitstodie down
         if (hitstodie > 0){
             hitstodie --;
@@ -462,13 +654,67 @@ void Inventory::buttonfunction(int num){
         
     // 21: hitstodie display has no click function, yet.
     
-    } else if (num >= 22 && num <= 25){ // put down a static block.
+    } else if (num == 22 || num == 33 || num == 37 || num == 38){ // put down a block.
         nextdown.type = 2;
-        nextdown.hitstodie = hitstodie;
-        if (num == 22){
+        nextdown.hitstodestroy = hitstodie;
+        nextdown.extra = "";
+        
+        if (num == 22){//static
             nextdown.func = 0;
-            nextdown.extra = "0";
+        } else if (num == 33){
+            nextdown.func=3;
+            nextdown.extra+="note:"+note+itostring(octave)+";";
+            nextdown.extra+="instrument:"+itostring(theinstrument)+";";
+        } else if (num == 37){
+            nextdown.func=1;
+            nextdown.extra+="createpattern:1;patterncycle:2.0;";
+        } else if (num == 38){
+            nextdown.func=2;
         }
+        
+    } else if (num == 23){
+        collides = !collides;
+    
+    
+    } else if (num == 25){
+        if (note=="C") {note="C#";}
+        else if (note=="C#"){note="D";}
+        else if (note=="D") {note="D#";}
+        else if (note=="D#"){note="E";}
+        else if (note=="E") {note="F";}
+        else if (note=="F") {note="F#";}
+        else if (note=="F#"){note="G";}
+        else if (note=="G") {note="G#";}
+        else if (note=="G#"){note="A";}
+        else if (note=="A") {note="A#";}
+        else if (note=="A#"){note="B";}
+        else if (note=="B") {note="C";}
+    } else if (num == 26){
+        if (note=="C") {note="B";}
+        else if (note=="C#"){note="C";}
+        else if (note=="D") {note="C#";}
+        else if (note=="D#"){note="D";}
+        else if (note=="E") {note="D#";}
+        else if (note=="F") {note="E";}
+        else if (note=="F#"){note="F";}
+        else if (note=="G") {note="F#";}
+        else if (note=="G#"){note="G";}
+        else if (note=="A") {note="G#";}
+        else if (note=="A#"){note="A";}
+        else if (note=="B") {note="A#";}
+    } else if (num == 28){
+        if (octave < 9) octave++;
+    } else if (num == 29){
+        if (octave >3) octave--;
+    } else if (num == 31){
+        if (theinstrument==9) {theinstrument=13;}
+        else if (theinstrument==13) {theinstrument=1;}
+        else if (theinstrument==1) {theinstrument=9;}
+    } else if (num == 32){
+        if (theinstrument==9) {theinstrument=1;}
+        else if (theinstrument==1) {theinstrument=13;}
+        else if (theinstrument==13) {theinstrument=9;}
     }
+
     
 }
