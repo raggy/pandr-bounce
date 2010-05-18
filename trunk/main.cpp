@@ -62,12 +62,12 @@ map <string, int> note;
 
 
 
-/*string itostring(int number){
+string itostring(int number){
     string s;
     stringstream out;
     out << number;
     return out.str();
-}*/
+}
 string ftostring(float number){
     string s;
     stringstream out;
@@ -896,8 +896,9 @@ class Tile {
                             drawBlockGlow(TILESIZE, glow[0], glow[1], glow[2]);
                         }
                         drawBlock(TILESIZE, temp, func);
-                        
-                        //Text(ftostring(glow[0])+" "+ftostring(glow[1]), 0, 0);
+                        if (hitstodestroy != 0){
+                            Text(itostring(hitstodestroy), 0, 0, TILESIZE/10);
+                        }
                         break;
                     default:
                         drawSomething(TILESIZE, drk);

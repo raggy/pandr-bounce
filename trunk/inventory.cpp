@@ -53,11 +53,48 @@ Inventory::Inventory(int glocation){
     things[2].push_back(17);//creator 17
     things[2].push_back(18);//destroyer 18
     
-    //static block menu
+    things.push_back(thing);//static block menu
+    things[3].push_back(2);//back
+    things[3].push_back(19);//hitstodie down 19
+    things[3].push_back(21);//hitsdie display 21
+    things[3].push_back(20);//hitstodie up 20
+    things[3].push_back(22);//static block lul 22
+    
+    things.push_back(thing);//modifier block menu
+    things[4].push_back(2);//back
     //hitstodie down 19
     //hitsdie display 21
     //hitstodie up 20
-    //static block lul 22
+    //collides checkbox 23
+    // change note to 24
+    //note up 25
+    //note down 26
+    // change octave 27
+    //octave up 28
+    //octave down 29
+    // change instrument 30 <- give a limited choice for now. Glock, xy, pinano, drum?
+    //instr up 31
+    //instr down 32
+    // modifier block lul 33
+    
+    things.push_back(thing);//modifier block menu
+    things[5].push_back(2);//back
+    //hitstodie down 19
+    //hitsdie display 21
+    //hitstodie up 20
+    //collides checkbox 23
+    //emits display 34
+    //emits up 35
+    //emits down 36
+    //creator block lul 37
+    
+    things.push_back(thing);//modifier block menu
+    things[6].push_back(2);//back
+    //hitstodie down 19
+    //hitsdie display 21
+    //hitstodie up 20
+    //collides checkbox 23
+    // destroyer block lul 38
     
     
     /*for (int i = 2; i < 50; i++){
@@ -70,6 +107,7 @@ Inventory::Inventory(int glocation){
 }
 
 void Inventory::update(string action, int x, int y, int W_WIDTH, int W_HEIGHT, int xmod = 0, int ymod = 0){
+            //update with clicks and actions
     int relx = x - W_WIDTH + width;
     
     if (action == "click"){
@@ -104,6 +142,7 @@ void Inventory::update(string action, int x, int y, int W_WIDTH, int W_HEIGHT, i
 }
 
 void Inventory::draw(int W_WIDTH, int W_HEIGHT, int xmod, int ymod){
+            // draw the G and the buttons.
     GLfloat adarkblue[]  = {0.03, 0.15, 0.53, 1};
     GLfloat alightblue[] = {0.37, 0.65, 0.94, 1};
     glPushMatrix();
@@ -111,7 +150,6 @@ void Inventory::draw(int W_WIDTH, int W_HEIGHT, int xmod, int ymod){
        
             glTranslated(W_WIDTH-20+xmod, 0+ymod, 0);// 0 or 1 for z? or what?
             
-            //glMaterialfv(GL_FRONT, GL_DIFFUSE, adarkblue);
             glBegin(GL_QUADS);
             glColor4f(adarkblue[0], adarkblue[1], adarkblue[2], adarkblue[3]);
                 glVertex2f(0,0);
@@ -120,7 +158,6 @@ void Inventory::draw(int W_WIDTH, int W_HEIGHT, int xmod, int ymod){
                 glVertex2f(0,W_HEIGHT);
             glEnd();
             
-            //glMaterialfv(GL_FRONT, GL_DIFFUSE, alightblue);
             glBegin(GL_LINE_LOOP);
             glColor4f(alightblue[0], alightblue[1], alightblue[2], alightblue[3]);
                 glVertex2f(7,W_HEIGHT/2-5);
@@ -132,7 +169,6 @@ void Inventory::draw(int W_WIDTH, int W_HEIGHT, int xmod, int ymod){
     
         glTranslated(W_WIDTH-150+xmod, 0+ymod, 0);
     
-        //glMaterialfv(GL_FRONT, GL_DIFFUSE, adarkblue);
         glBegin(GL_QUADS);
             glColor4f(adarkblue[0], adarkblue[1], adarkblue[2], adarkblue[3]);
             glVertex2f(0,0);
@@ -142,7 +178,6 @@ void Inventory::draw(int W_WIDTH, int W_HEIGHT, int xmod, int ymod){
         glEnd();
         
     
-        //glMaterialfv(GL_FRONT, GL_DIFFUSE, alightblue);
         glBegin(GL_LINE_LOOP);
             glColor4f(alightblue[0], alightblue[1], alightblue[2], alightblue[3]);
             glVertex2f(14,W_HEIGHT/2-5);
@@ -153,10 +188,7 @@ void Inventory::draw(int W_WIDTH, int W_HEIGHT, int xmod, int ymod){
         Text("Inventory", 4, 4, 3, 1,1,1);
         
         
-        //cout <<"draw "<< W_WIDTH<< ", "<< W_HEIGHT << "\n";
-        
         for (int i = 0; i < (int)things[currentpage].size(); i ++){
-            //cout << i << "\n";
             buttonGet(things[currentpage][i], W_WIDTH, W_HEIGHT, xmod, ymod);
         }
         
@@ -168,12 +200,12 @@ void Inventory::draw(int W_WIDTH, int W_HEIGHT, int xmod, int ymod){
 
 
 void Inventory::buttonGet(int num, int W_WIDTH, int W_HEIGHT, int xmod = 0, int ymod = 0){
-    //cout <<"get "<< W_WIDTH<< ", "<< W_HEIGHT << "\n";
+            // display the button with the details from its area func.
     buttondisplay(num, buttonarea(num, 0, W_WIDTH, W_HEIGHT, xmod, ymod), buttonarea(num, 1, W_WIDTH, W_HEIGHT, xmod, ymod));
 }
 
 void Inventory::buttondisplay(int num, int xoff, int yoff){
-    //cout<< "display "<< xoff<< ", "<< yoff << "\n";
+            //display the button
     GLfloat black[]      = {0,0,0, 1};
     GLfloat linecolour[] = {0,1,0, 1};
     GLfloat blockcolour[] = {1,0,0, 1};
@@ -222,6 +254,29 @@ void Inventory::buttondisplay(int num, int xoff, int yoff){
             glVertex2f(xoff+3,yoff+15);
         glEnd();
             Text("Back", xoff+16, yoff+15-5, TextHeight(10));
+        
+        switch (currentpage){
+            case 1:
+                Text("Lines", xoff, yoff+38, 3);
+                break;
+            case 2:
+                Text("Blocks", xoff-10, yoff+38, 3);
+                break;
+            case 3:
+                Text("Normal", xoff-10, yoff+38, 3);
+                break;
+            case 4:
+                Text("Changer", xoff-16, yoff+38, 3);
+                break;
+            case 5:
+                Text("Creator", xoff-16, yoff+38, 3);
+                break;
+            case 6:
+                Text("Destroyer", xoff-28, yoff+38, 3);
+                break;
+        }
+                
+        
             
     } else if (num >= 3 && num <=14){
         glBegin(GL_QUADS);
@@ -236,17 +291,26 @@ void Inventory::buttondisplay(int num, int xoff, int yoff){
     } else if (num >= 15 && num <= 18){
         glBegin(GL_QUADS);
         glColor4f(black[0], black[1], black[2], black[3]);
-            glVertex2f(xoff-2,yoff-2);
-            glVertex2f(xoff+52,yoff-2);
-            glVertex2f(xoff+52,yoff+52);
-            glVertex2f(xoff-2,yoff+52);
+            glVertex2f(xoff-0,yoff-0);
+            glVertex2f(xoff+80,yoff-0);
+            glVertex2f(xoff+80,yoff+80);
+            glVertex2f(xoff-0,yoff+80);
         glEnd();
-        drawBlock(50, blockcolour, 0, xoff, yoff);
-        
+        drawBlock(60, blockcolour, 0, xoff+10, yoff+10);
+        if (num == 15){
+            Text("Normal", xoff+16, yoff, TextHeight(10));
+        } else if (num == 16){
+            Text("Changer", xoff+12, yoff, TextHeight(10));
+        } else if (num == 17){
+            Text("Creator", xoff+12, yoff, TextHeight(10));
+        } else if (num == 18){
+            Text("Destroyer", xoff+4, yoff, TextHeight(10));
+        }
     }
 }
 
 int Inventory::buttonarea(int num, int part, int W_WIDTH, int W_HEIGHT, int xmod=0, int ymod=0){
+        //get the button's position and area
     int arraytoreturn[4]; //x1, y1, x2, y2
     
     int adjustx = 0;
@@ -267,10 +331,10 @@ int Inventory::buttonarea(int num, int part, int W_WIDTH, int W_HEIGHT, int xmod
     
     //BLOCK MENU stuff
     if (num >= 15 && num <= 18){
-        adjustx += 25;
+        adjustx += 35;
         adjusty += 120;
         
-        adjusty +=(num-15)*80;
+        adjusty +=(num-15)*100;
     }
     
     if (num == 0){
@@ -294,12 +358,16 @@ int Inventory::buttonarea(int num, int part, int W_WIDTH, int W_HEIGHT, int xmod
         arraytoreturn[2] = adjustx+50;
         arraytoreturn[3] = adjusty+50;
     } else if (num >= 15 && num <= 18){
-        
+        arraytoreturn[0] = adjustx;
+        arraytoreturn[1] = adjusty;
+        arraytoreturn[2] = adjustx+80;
+        arraytoreturn[3] = adjusty+80;
     }
     return arraytoreturn[part];
 }
 
 void Inventory::buttonfunction(int num){
+        // what happens when you click a button.
     if (num == 0){
         currentpage = 1;//line menu
         
@@ -307,7 +375,11 @@ void Inventory::buttonfunction(int num){
         currentpage = 2;//block menu
         
     } else if (num == 2){
-        currentpage = 0; //back button to main
+        if (currentpage == 1 || currentpage == 2){
+            currentpage = 0; //back button to main
+        } else if (currentpage == 3||currentpage == 4||currentpage == 5||currentpage == 6){
+            currentpage = 2;
+        }
         
     } else if (num >= 3 && num <=14){ // line buttons
         nextdown.type = 1;
@@ -315,7 +387,8 @@ void Inventory::buttonfunction(int num){
         nextdown.extra = tostring(( 0+ ((num-3)*15) ));
         
     } else if (num >=15 && num <=18){ //block buttons -> submenus
-        currentpage = num- 11;//? is this right?
+        currentpage = num- 12;//? is this right?
+        cout << "Going to " << currentpage << "\n";
         
     } else if (num == 19){// hitstodie down
         if (hitstodie > 0){
