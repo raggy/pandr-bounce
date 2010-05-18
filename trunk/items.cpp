@@ -203,11 +203,16 @@ void drawLine(int theTILESIZE, GLfloat colour[], double x1, double y1, double x2
 
 }
 
-
 void drawBlock(int theTILESIZE, GLfloat colour[], int func){
-    drawBlock(theTILESIZE, colour, func, 0, 0);
+    drawBlock(theTILESIZE, colour, func, 0, 0, "");
+}
+void drawBlock(int theTILESIZE, GLfloat colour[], int func, string writing=""){
+    drawBlock(theTILESIZE, colour, func, 0, 0, writing);
 }
 void drawBlock(int theTILESIZE, GLfloat colour[], int func, int x, int y){
+    drawBlock(theTILESIZE, colour, func, x, y, "");
+}
+void drawBlock(int theTILESIZE, GLfloat colour[], int func, int x, int y, string writing=""){
     //glMaterialfv(GL_FRONT, GL_DIFFUSE, colour);
     glBegin(GL_QUADS);
         glColor4f(colour[0], colour[1], colour[2], colour[3]);
@@ -221,7 +226,7 @@ void drawBlock(int theTILESIZE, GLfloat colour[], int func, int x, int y){
         glVertex2f(0+x, theTILESIZE-1+y);
     glEnd();
     if (func != 0){
-        Text("E4", theTILESIZE/10.0+x, theTILESIZE/10.0+y, theTILESIZE/10.0);
+        Text(writing, theTILESIZE/10.0+x, theTILESIZE/10.0+y, theTILESIZE/10.0);
     }
 }
 

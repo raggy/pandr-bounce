@@ -231,7 +231,10 @@ class Ball {
                 return false;
             }
         }
-        
+        void changeinstrument(int instrument){
+            myinstrument = instrument;
+            midiout->openPort(bid);
+        }
         void changenote(string thenote, int thevelocity = -1){
             textnote = thenote;
             mynote = note[thenote];
@@ -522,9 +525,14 @@ class Tile {
         string modifier;
         //let's just store it in sodding strings.
         string emitter;
+        
         int hitstodestroy;
         int maxhitstodestroy;
         bool ghost;
+        string emitpattern;
+        float emitevery;
+        string bnote;
+        int binstrument;
         
         float glow[3];
         
@@ -534,7 +542,30 @@ class Tile {
 
         float r, g, b;
         
-        Tile(int& sid, int& sx, int& sy, int stype = 0, int sfunc = 0, string sextra="0", int shits = 0, bool sghost = false){
+        vector <string> extrasplit;
+        vector <string> extrapart;
+        
+        void Tokenize(const string& str, vector<string>& tokens, const string& delimiters = ";") {
+            // Skip delimiters at beginning.
+            string::size_type lastPos = str.find_first_not_of(delimiters, 0);
+            // Find first "non-delimiter".
+            string::size_type pos     = str.find_first_of(delimiters, lastPos);
+
+            while (string::npos != pos || string::npos != lastPos)
+            {
+                // Found a token, add it to the vector.
+                tokens.push_back(str.substr(lastPos, pos - lastPos));
+                // Skip delimiters.  Note the "not_of"
+                lastPos = str.find_first_not_of(delimiters, pos);
+                // Find next "non-delimiter"
+                pos = str.find_first_of(delimiters, lastPos);
+            }
+        }
+
+        
+        
+        
+        Tile(int& sid, int& sx, int& sy, int stype = 0, int sfunc = 0, string sextra="", int shits = 0, bool sghost = false){
             uid = sid;
             x = sx;
             y = sy;
@@ -545,6 +576,12 @@ class Tile {
             
             hitstodestroy = shits;
             maxhitstodestroy = shits;
+            
+            ghost = sghost;
+            emitpattern="1";
+            emitevery=2.0;
+            bnote = "";
+            binstrument = -1;
             
             if (hitstodestroy != 0){
                 glow[0] = 0.0;
@@ -622,6 +659,50 @@ class Tile {
                     cout << coords[i] << ", ";
                 }
                 cout << "\n";*/
+            } else if (type == 2){
+                //EXTRA PARSING:
+                //collides:1;
+                //createpattern:10010010; etc
+                //  just 1 for now
+                //patterncycle:1.0
+                //  if createpattern not there, just 1 ball per patterncycle.
+                
+                Tokenize(extra, extrasplit, ";");
+                
+                for (int i = 0; i < extrasplit.size(); i++){
+                    
+                    Tokenize(extrasplit[i], extrapart, ":");
+                    
+                    /*cout << "Thing: "<< extrasplit[i] << "\n";
+                    cout << "Part1: "<< extrapart[0] << "\n";
+                    cout << "Part2: "<< extrapart[1] << "\n";*/
+                    
+                    
+                    if (extrapart[0] == "collides"){
+                        ghost = !( atoi(extrapart[1].c_str()) );
+                    }
+                    if (extrapart[0] == "createpattern"){
+                        emitpattern = extrapart[1];
+                    }
+                    
+                    if (extrapart[0] == "patterncycle"){
+                        emitevery = atof(extrapart[1].c_str());
+                    }
+                    if (extrapart[0] == "note"){
+                        bnote = extrapart[1];
+                        //cout << "Note: " << bnote << "\n";
+                    }
+                    if (extrapart[0] == "instrument"){
+                        binstrument = atof(extrapart[1].c_str());
+                        //cout << "Instrument: " << binstrument << "\n";
+                    }
+
+
+                    extrapart.pop_back();
+                    extrapart.pop_back();
+
+                }
+            
             }
         }
         
@@ -823,8 +904,13 @@ class Tile {
                             //cout << "thock (" << ball->getID() << ")\n"; 
                             
                             if (func == 3){
-                                ball->changenote(extra);
-                                cout << "NOTE CHANGE: " << extra << "\n";
+                                if (bnote != ""){
+                                    ball->changenote(bnote);
+                                    cout << "NOTE CHANGE: " << bnote << "\n";
+                                }
+                                if (binstrument != -1){
+                                    ball->changeinstrument(binstrument);
+                                }
                             }
                             
                             if (!ghost){
@@ -884,7 +970,7 @@ class Tile {
                         if (hitstodestroy != 0){
                             drawBlockGlow(TILESIZE, glow[0], glow[1], glow[2]);
                         }
-                        drawBlock(TILESIZE, temp, func);
+                        drawBlock(TILESIZE, temp, func, bnote);
                         if (hitstodestroy != 0){
                             Text(itostring(hitstodestroy), 0, 0, TILESIZE/10);
                         }
@@ -929,14 +1015,14 @@ class Map {
                 tiles.push_back(dummy);
                 for (int j = 0; j < height; j++) {
                     if (i == 10 && j == 20){
-                        tiles[i].push_back(Tile(uid, i, j, 1, 0, "0", 0, false)); //static line
+                        tiles[i].push_back(Tile(uid, i, j, 1, 0, "", 0, false)); //static line
                     } else if (i == 4 && j == 20){
-                        tiles[i].push_back(Tile(uid, i, j, 2, 0, "0", 20, false)); //static block
+                        tiles[i].push_back(Tile(uid, i, j, 2, 0, "", 20, false)); //static block
                     } else if (i == 10 && j == 25){
-                        tiles[i].push_back(Tile(uid, i, j, 2, 3, "E4", 0, true));// changer block
+                        tiles[i].push_back(Tile(uid, i, j, 2, 3, "note:E4;instrument:13;", 0, true));// changer block
             
                     } else {
-                        tiles[i].push_back(Tile(uid, i, j, 0, 0, "0", 0, true));// bg/ghost
+                        tiles[i].push_back(Tile(uid, i, j, 0, 0, "", 0, true));// bg/ghost
                     }
                     uid ++;
                 }
@@ -953,8 +1039,8 @@ class Map {
                 
         }
         
-        void change (int x, int y, int type = 0, int func = 0, string extra = "0"){
-            tiles[x][y] = Tile(tiles[x][y].uid, x, y, type, func, extra);
+        void change (int x, int y, int type = 0, int func = 0, string extra = "0", int hits = 0){
+            tiles[x][y] = Tile(tiles[x][y].uid, x, y, type, func, extra, hits);
         }
 };
 
@@ -1243,7 +1329,7 @@ void Mouse(int button, int state, int x, int y){
                     if (!invent.active){
                         
                         if (((x+cameraxmod)>= 0 && (x+cameraxmod) < W_WIDTH) && ((y+cameraymod)>= 0 && (y+cameraymod) < W_HEIGHT)){
-                            themap.change((x+cameraxmod)/TILESIZE,(y+cameraymod)/TILESIZE, invent.nextdown.type, invent.nextdown.func, invent.nextdown.extra);
+                            themap.change((x+cameraxmod)/TILESIZE,(y+cameraymod)/TILESIZE, invent.nextdown.type, invent.nextdown.func, invent.nextdown.extra, invent.nextdown.hitstodestroy);
                         }
                     } else {
                         invent.update("click", x+cameraxmod, y+cameraymod, W_WIDTH, W_HEIGHT, cameraxmod, cameraymod);

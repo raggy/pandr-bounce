@@ -44,7 +44,9 @@ void drawLine(int theTILESIZE, GLfloat colour[], double x1, double y1, double x2
 void drawLine(int theTILESIZE, GLfloat colour[], double x1, double y1, double x2, double y2, int thix, int thisy);
 
 void drawBlock(int theTILESIZE, GLfloat colour[], int func);
+void drawBlock(int theTILESIZE, GLfloat colour[], int func, string writing);
 void drawBlock(int theTILESIZE, GLfloat colour[], int func, int x, int y);
+void drawBlock(int theTILESIZE, GLfloat colour[], int func, int x, int y, string writing);
 
 void drawSomething(int theTILESIZE, GLfloat colour[]);
 void drawSomething(int theTILESIZE, GLfloat colour[], int x, int y);

@@ -15,6 +15,7 @@
 
 #include <string>
 #include <vector>
+#include <map>
 using namespace std;
 
 #ifndef INVENTLOL
@@ -25,14 +26,16 @@ struct Tileinfo{
         int type;
         int func;
         string extra;
-        int hitstodie; 
+        int hitstodestroy;
         Tileinfo(){
             type=1;
             func=0;
             extra="0";
-            hitstodie = 0;
+            hitstodestroy = 0;
         }
 };
+
+
 
 string tostring(int number);
 
@@ -53,6 +56,11 @@ class Inventory {
         vector < vector <int> > things;
         
         int hitstodie;
+        int collides;
+        string note;
+        int octave;
+        map <int, string> instrument;
+        int theinstrument;
         
         
         Inventory(int glocation);
