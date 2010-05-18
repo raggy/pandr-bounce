@@ -19,9 +19,12 @@ using namespace std;
 
 #ifndef TEXT_H
 #define TEXT_H
+string itostring(int number);
+string ftostring(float number);
 
 void Text(string msg, int x, int y);
 void Text(string msg, int x, int y, float size);
+void Text(string msg, int x, int y, float size, GLfloat colour[]);
 void Text(string msg, int x, int y, float size, double r, double g, double b);
 
 double TextHeight(int lineheight);

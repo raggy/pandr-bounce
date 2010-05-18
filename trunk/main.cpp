@@ -62,18 +62,7 @@ map <string, int> note;
 
 
 
-string itostring(int number){
-    string s;
-    stringstream out;
-    out << number;
-    return out.str();
-}
-string ftostring(float number){
-    string s;
-    stringstream out;
-    out << number;
-    return out.str();
-}
+
 float deg(float rads){
     return rads * 180/PI;
 }
