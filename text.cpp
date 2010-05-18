@@ -8,6 +8,7 @@
  */
 
 #include <string>
+#include <sstream>
 #include <iostream>
 
 #include "text.h"
@@ -15,7 +16,18 @@
 using namespace std;
 
 
-
+string itostring(int number){
+    string s;
+    stringstream out;
+    out << number;
+    return out.str();
+}
+string ftostring(float number){
+    string s;
+    stringstream out;
+    out << number;
+    return out.str();
+}
 
 void Text(string msg, int x, int y){
     Text(msg, x, y, 1, 1, 1, 1.0);
@@ -23,6 +35,10 @@ void Text(string msg, int x, int y){
 
 void Text(string msg, int x, int y, float size){
     Text(msg, x, y, size, 1, 1, 1.0);
+}
+
+void Text(string msg, int x, int y, float size, GLfloat colour[]){
+    Text(msg, x, y, size, colour[0], colour[1], colour[2]);
 }
 
 void Text(string msg, int x, int y, float size = 1.0, double r=1, double g=1, double b=1){

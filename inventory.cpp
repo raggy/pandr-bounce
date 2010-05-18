@@ -62,9 +62,9 @@ Inventory::Inventory(int glocation){
     
     things.push_back(thing);//modifier block menu
     things[4].push_back(2);//back
-    //hitstodie down 19
-    //hitsdie display 21
-    //hitstodie up 20
+    things[4].push_back(19);//hitstodie down 19
+    things[4].push_back(21);//hitsdie display 21
+    things[4].push_back(20);//hitstodie up 20
     //collides checkbox 23
     // change note to 24
     //note up 25
@@ -79,20 +79,20 @@ Inventory::Inventory(int glocation){
     
     things.push_back(thing);//modifier block menu
     things[5].push_back(2);//back
-    //hitstodie down 19
-    //hitsdie display 21
-    //hitstodie up 20
+    things[5].push_back(19);//hitstodie down 19
+    things[5].push_back(21);//hitsdie display 21
+    things[5].push_back(20);//hitstodie up 20
     //collides checkbox 23
-    //emits display 34
+    //emits display 34 <- thinking the scale should be 1s default. down is every 0.5s, up is 2s.
     //emits up 35
     //emits down 36
     //creator block lul 37
     
     things.push_back(thing);//modifier block menu
     things[6].push_back(2);//back
-    //hitstodie down 19
-    //hitsdie display 21
-    //hitstodie up 20
+    things[6].push_back(19);//hitstodie down 19
+    things[6].push_back(21);//hitsdie display 21
+    things[6].push_back(20);//hitstodie up 20
     //collides checkbox 23
     // destroyer block lul 38
     
@@ -108,37 +108,40 @@ Inventory::Inventory(int glocation){
 
 void Inventory::update(string action, int x, int y, int W_WIDTH, int W_HEIGHT, int xmod = 0, int ymod = 0){
             //update with clicks and actions
-    int relx = x - W_WIDTH + width;
+            
     
-    if (action == "click"){
-        for (int i = 0; i < (int)things[currentpage].size(); i++){
-            //for thing in this page
-            //cout << "KLIKU"<<things[currentpage][i]<<"\n";
-            
-            //
-            cout << relx << ", " << y << " to " <<
-            buttonarea(things[currentpage][i], 0, W_WIDTH, W_HEIGHT, xmod, ymod) <<", "<<
-            buttonarea(things[currentpage][i], 1, W_WIDTH, W_HEIGHT, xmod, ymod) <<", "<<
-            buttonarea(things[currentpage][i], 2, W_WIDTH, W_HEIGHT, xmod, ymod) <<", "<<
-            buttonarea(things[currentpage][i], 3, W_WIDTH, W_HEIGHT, xmod, ymod) <<"\n";
-            
-            if (relx-xmod >= buttonarea(things[currentpage][i], 0, W_WIDTH, W_HEIGHT, xmod, ymod) &&
-                relx-xmod <= buttonarea(things[currentpage][i], 2, W_WIDTH, W_HEIGHT, xmod, ymod) &&
-                y-ymod >= buttonarea(things[currentpage][i], 1, W_WIDTH, W_HEIGHT, xmod, ymod) &&
-                y-ymod <= buttonarea(things[currentpage][i], 3, W_WIDTH, W_HEIGHT, xmod, ymod)){
+        int relx = x - W_WIDTH + width;
+        if (action == "click"){
+            for (int i = 0; i < (int)things[currentpage].size(); i++){
+                //for thing in this page
+                //cout << "KLIKU"<<things[currentpage][i]<<"\n";
                 
-                buttonfunction(things[currentpage][i]);
+                //
+                cout << relx << ", " << y << " to " <<
+                buttonarea(things[currentpage][i], 0, W_WIDTH, W_HEIGHT, xmod, ymod) <<", "<<
+                buttonarea(things[currentpage][i], 1, W_WIDTH, W_HEIGHT, xmod, ymod) <<", "<<
+                buttonarea(things[currentpage][i], 2, W_WIDTH, W_HEIGHT, xmod, ymod) <<", "<<
+                buttonarea(things[currentpage][i], 3, W_WIDTH, W_HEIGHT, xmod, ymod) <<"\n";
+                
+                if (relx-xmod >= buttonarea(things[currentpage][i], 0, W_WIDTH, W_HEIGHT, xmod, ymod) &&
+                    relx-xmod <= buttonarea(things[currentpage][i], 2, W_WIDTH, W_HEIGHT, xmod, ymod) &&
+                    y-ymod >= buttonarea(things[currentpage][i], 1, W_WIDTH, W_HEIGHT, xmod, ymod) &&
+                    y-ymod <= buttonarea(things[currentpage][i], 3, W_WIDTH, W_HEIGHT, xmod, ymod)){
+                    
+                    buttonfunction(things[currentpage][i]);
+                    break;
+                    
+                }
+                
                 
             }
             
-            
-        }
+        } else  if (action == "drag"){
         
-    } else  if (action == "drag"){
+        } else if (action == "rightclick"){
+        
+        } // I dunno
     
-    } else if (action == "rightclick"){
-    
-    } // I dunno
 }
 
 void Inventory::draw(int W_WIDTH, int W_HEIGHT, int xmod, int ymod){
@@ -166,7 +169,7 @@ void Inventory::draw(int W_WIDTH, int W_HEIGHT, int xmod, int ymod){
             glEnd();
             
     } else {
-    
+        
         glTranslated(W_WIDTH-150+xmod, 0+ymod, 0);
     
         glBegin(GL_QUADS);
@@ -306,11 +309,49 @@ void Inventory::buttondisplay(int num, int xoff, int yoff){
         } else if (num == 18){
             Text("Destroyer", xoff+4, yoff, TextHeight(10));
         }
+    } else if (num == 19 || num == 20){
+        glBegin(GL_QUADS);
+        glColor4f(black[0], black[1], black[2], black[3]);
+            glVertex2f(xoff+0,yoff+0);
+            glVertex2f(xoff+20,yoff+0);
+            glVertex2f(xoff+20,yoff+30);
+            glVertex2f(xoff+0,yoff+30);
+        glColor4f(alightblue[0], alightblue[1], alightblue[2], alightblue[3]);
+            glVertex2f(xoff+3,yoff+13);
+            glVertex2f(xoff+17,yoff+13);
+            glVertex2f(xoff+17,yoff+17);
+            glVertex2f(xoff+3,yoff+17);
+        if (num == 20){
+            glVertex2f(xoff+8,yoff+8);
+            glVertex2f(xoff+12,yoff+8);
+            glVertex2f(xoff+12,yoff+22);
+            glVertex2f(xoff+8,yoff+22);
+        }
+        glEnd();
+    } else if (num == 21){
+        glBegin(GL_QUADS);
+        glColor4f(black[0], black[1], black[2], black[3]);
+            glVertex2f(xoff+0,yoff+0);
+            glVertex2f(xoff+40,yoff+0);
+            glVertex2f(xoff+40,yoff+30);
+            glVertex2f(xoff+0,yoff+30);
+        glEnd();
+        
+        Text("Hits to destroy", xoff-10, yoff-10);
+        
+        if (hitstodie>=10){
+            Text(itostring(hitstodie), xoff+9, yoff+5, 3);
+        } else if (hitstodie>0){
+            Text(itostring(hitstodie), xoff+15, yoff+5, 3);
+        } else {
+            Text(itostring(hitstodie), xoff+15, yoff+5, 3, alightblue);
+        }
     }
 }
 
 int Inventory::buttonarea(int num, int part, int W_WIDTH, int W_HEIGHT, int xmod=0, int ymod=0){
         //get the button's position and area
+        
     int arraytoreturn[4]; //x1, y1, x2, y2
     
     int adjustx = 0;
@@ -333,8 +374,15 @@ int Inventory::buttonarea(int num, int part, int W_WIDTH, int W_HEIGHT, int xmod
     if (num >= 15 && num <= 18){
         adjustx += 35;
         adjusty += 120;
-        
         adjusty +=(num-15)*100;
+    }
+    
+    //HITSTODIE stuff
+    if (num >= 19 && num <= 21){
+        adjusty += 120;
+        adjustx += 35;
+        if (num==21) adjustx+=23;
+        if (num==20) adjustx+=66;
     }
     
     if (num == 0){
@@ -362,12 +410,27 @@ int Inventory::buttonarea(int num, int part, int W_WIDTH, int W_HEIGHT, int xmod
         arraytoreturn[1] = adjusty;
         arraytoreturn[2] = adjustx+80;
         arraytoreturn[3] = adjusty+80;
+    } else if (num == 19 || num == 20){
+        arraytoreturn[0] = adjustx;
+        arraytoreturn[1] = adjusty;
+        arraytoreturn[2] = adjustx+20;
+        arraytoreturn[3] = adjusty+30;
+    } else if (num == 21){
+        arraytoreturn[0] = adjustx;
+        arraytoreturn[1] = adjusty;
+        arraytoreturn[2] = adjustx+40;
+        arraytoreturn[3] = adjusty+30;
     }
     return arraytoreturn[part];
 }
 
 void Inventory::buttonfunction(int num){
         // what happens when you click a button.
+        
+    cout << num << "\n";
+    
+    
+        
     if (num == 0){
         currentpage = 1;//line menu
         
@@ -388,7 +451,6 @@ void Inventory::buttonfunction(int num){
         
     } else if (num >=15 && num <=18){ //block buttons -> submenus
         currentpage = num- 12;//? is this right?
-        cout << "Going to " << currentpage << "\n";
         
     } else if (num == 19){// hitstodie down
         if (hitstodie > 0){
