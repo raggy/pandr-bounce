@@ -41,6 +41,7 @@ Inventory::Inventory(int glocation){
     instrument[13] = "Xylophone";
     instrument[1] = "Piano";
     theinstrument = 9;
+    ballevery = 2.0;
     
     things.push_back(thing);//initial menu.
     
@@ -90,9 +91,18 @@ Inventory::Inventory(int glocation){
     things[5].push_back(21);//hitsdie display 21
     things[5].push_back(20);//hitstodie up 20
     things[5].push_back(23);//collides checkbox 23
-    //emits display 34 <- thinking the scale should be 1s default. down is every 0.5s, up is 2s.
-    //emits up 35
-    //emits down 36
+    things[5].push_back(24);// display note 24
+    things[5].push_back(25);//note up 25
+    things[5].push_back(26);//note down 26
+    things[5].push_back(27);// display octave 27
+    things[5].push_back(28);//octave up 28
+    things[5].push_back(29);//octave down 29
+    things[5].push_back(30);// instrument display 30 <- give a limited choice for now. Glock, xy, pinano, drum?
+    things[5].push_back(31);//instr up 31
+    things[5].push_back(32);//instr down 32
+    things[5].push_back(34);//emits display 34 <- scale should be 2s default. down to 0.5s, up to 5s.
+    things[5].push_back(35);//emits up 35
+    things[5].push_back(36);//emits down 36
     things[5].push_back(37);//creator block lul 37
     
     things.push_back(thing);//destroyer block menu
@@ -100,7 +110,7 @@ Inventory::Inventory(int glocation){
     things[6].push_back(19);//hitstodie down 19
     things[6].push_back(21);//hitsdie display 21
     things[6].push_back(20);//hitstodie up 20
-    things[6].push_back(23);
+    things[6].push_back(23);//collides checkbox 23
     things[6].push_back(38);// destroyer block lul 38
     
     
@@ -319,7 +329,7 @@ void Inventory::buttondisplay(int num, int xoff, int yoff){
         } else if (num == 22 || num == 33 || num == 37 || num == 38){
             Text("Finalise", xoff+8, yoff, TextHeight(10));
         }
-    } else if (num == 19 || num == 20){
+    } else if (num == 19 || num == 20 || num == 35 || num == 36){ //minus and plus signs
         glBegin(GL_QUADS);
         glColor4f(black[0], black[1], black[2], black[3]);
             glVertex2f(xoff+0,yoff+0);
@@ -331,7 +341,7 @@ void Inventory::buttondisplay(int num, int xoff, int yoff){
             glVertex2f(xoff+17,yoff+13);
             glVertex2f(xoff+17,yoff+17);
             glVertex2f(xoff+3,yoff+17);
-        if (num == 20){
+        if (num == 20 || num == 35){
             glVertex2f(xoff+8,yoff+8);
             glVertex2f(xoff+12,yoff+8);
             glVertex2f(xoff+12,yoff+22);
@@ -471,6 +481,23 @@ void Inventory::buttondisplay(int num, int xoff, int yoff){
                     glVertex2f(xoff+45,yoff+10);
                 }
         glEnd();
+    } else if (num == 34){// emits display
+    
+        glBegin(GL_QUADS);
+        glColor4f(black[0], black[1], black[2], black[3]);
+            glVertex2f(xoff+0,yoff+0);
+            glVertex2f(xoff+40,yoff+0);
+            glVertex2f(xoff+40,yoff+30);
+            glVertex2f(xoff+0,yoff+30);
+        glEnd();
+        Text("Make a ball every", xoff-12, yoff-10);
+        Text("seconds", xoff+5, yoff+32);
+        if (ftostring(ballevery).size() == 3){
+            Text(ftostring(ballevery), xoff+1, yoff+5, 4, white);
+        } else {
+            Text(ftostring(ballevery), xoff+14, yoff+5, 4, white);
+        }
+        
 
     }
 }
@@ -526,6 +553,14 @@ int Inventory::buttonarea(int num, int part, int W_WIDTH, int W_HEIGHT, int xmod
         adjustx += (num-31)*70;
     }
     
+    //EMIT TIME stuff
+    if (num >= 34 && num <= 36){
+        adjusty += 400;
+        adjustx += 35;
+        if (num==34) adjustx+=23;
+        if (num==35) adjustx+=66;
+    }
+    
     if (num == 0){
         arraytoreturn[0] = 25;
         arraytoreturn[1] = W_HEIGHT/2-150;
@@ -551,12 +586,12 @@ int Inventory::buttonarea(int num, int part, int W_WIDTH, int W_HEIGHT, int xmod
         arraytoreturn[1] = adjusty;
         arraytoreturn[2] = adjustx+80;
         arraytoreturn[3] = adjusty+80;
-    } else if (num == 19 || num == 20){
+    } else if (num == 19 || num == 20 || num == 35 || num == 36){
         arraytoreturn[0] = adjustx;
         arraytoreturn[1] = adjusty;
         arraytoreturn[2] = adjustx+20;
         arraytoreturn[3] = adjusty+30;
-    } else if (num == 21){
+    } else if (num == 21 || num == 34){
         arraytoreturn[0] = adjustx;
         arraytoreturn[1] = adjusty;
         arraytoreturn[2] = adjustx+40;
@@ -601,7 +636,18 @@ int Inventory::buttonarea(int num, int part, int W_WIDTH, int W_HEIGHT, int xmod
         arraytoreturn[1] = 400;
         arraytoreturn[2] = 40+80;
         arraytoreturn[3] = 400+80;
+    } else if (num == 38){
+        arraytoreturn[0] = 40;
+        arraytoreturn[1] = 300;
+        arraytoreturn[2] = 40+80;
+        arraytoreturn[3] = 300+80;
+    } else if (num == 37){
+        arraytoreturn[0] = 40;
+        arraytoreturn[1] = 500;
+        arraytoreturn[2] = 40+80;
+        arraytoreturn[3] = 500+80;
     }
+    
     
     glBegin(GL_LINE_LOOP);
         glColor4f(1,0,0,1);
@@ -659,15 +705,20 @@ void Inventory::buttonfunction(int num){
         nextdown.hitstodestroy = hitstodie;
         nextdown.extra = "";
         
+        if (num != 22){ nextdown.extra += "collides:"+itostring(collides)+";";}
+        
+        if (num == 33 || num == 37){
+            nextdown.extra+="note:"+note+itostring(octave)+";";
+            nextdown.extra+="instrument:"+itostring(theinstrument)+";";
+        }
+        
         if (num == 22){//static
             nextdown.func = 0;
         } else if (num == 33){
             nextdown.func=3;
-            nextdown.extra+="note:"+note+itostring(octave)+";";
-            nextdown.extra+="instrument:"+itostring(theinstrument)+";";
         } else if (num == 37){
             nextdown.func=1;
-            nextdown.extra+="createpattern:1;patterncycle:2.0;";
+            nextdown.extra+="createpattern:1;patterncycle:"+ftostring(ballevery)+";";
         } else if (num == 38){
             nextdown.func=2;
         }
@@ -714,7 +765,14 @@ void Inventory::buttonfunction(int num){
         if (theinstrument==9) {theinstrument=1;}
         else if (theinstrument==1) {theinstrument=13;}
         else if (theinstrument==13) {theinstrument=9;}
+    } else if (num == 35){
+        if (ballevery < 5){
+           ballevery += 0.5;
+        }
+    } else if (num == 36){
+        if (ballevery >=1){
+            ballevery -= 0.5;
+        }
+        
     }
-
-    
 }

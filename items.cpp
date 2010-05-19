@@ -17,10 +17,7 @@
 #define PI 3.14159265
 
 void itemsInit(){
-    /*cout <<"1: " << fuckingtexture << "\n";
-    fuckingtexture = ballTexture();
-    cout <<"2: " << fuckingtexture << "\n";*/
-    //ballTexture();
+    
 }
 
 int ballTexture(){
@@ -224,6 +221,20 @@ void drawBlock(int theTILESIZE, GLfloat colour[], int func, int x, int y, string
         
         //glColor4f(0,1,0,1);
         glVertex2f(0+x, theTILESIZE-1+y);
+        
+        if (func == 2){
+            glColor4f(1,1,1,1);
+            glVertex2f((theTILESIZE/5), (theTILESIZE/10));
+            glVertex2f(theTILESIZE-(theTILESIZE/10), theTILESIZE-(theTILESIZE/5));
+            glVertex2f(theTILESIZE-(theTILESIZE/5), theTILESIZE-(theTILESIZE/10));
+            glVertex2f((theTILESIZE/10), (theTILESIZE/5));
+            
+            glVertex2f(theTILESIZE-(theTILESIZE/10), (theTILESIZE/5));
+            glVertex2f((theTILESIZE/5), theTILESIZE-(theTILESIZE/10));
+            glVertex2f((theTILESIZE/10), theTILESIZE-(theTILESIZE/5));
+            glVertex2f(theTILESIZE-(theTILESIZE/5), (theTILESIZE/10));
+            //find and replace ftw
+        }
     glEnd();
     if (func != 0){
         Text(writing, theTILESIZE/10.0+x, theTILESIZE/10.0+y, theTILESIZE/10.0);

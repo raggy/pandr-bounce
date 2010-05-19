@@ -61,6 +61,7 @@ class Inventory {
         int octave;
         map <int, string> instrument;
         int theinstrument;
+        float ballevery;
         
         
         Inventory(int glocation);
