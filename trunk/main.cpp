@@ -127,7 +127,9 @@ class Ball {
         //ints probably need to be mapped to a dictionary, for sanity
         vector<unsigned char> message;
         
-        Ball(int bx, int by, int instrument=9, int thenote=60){
+        
+        
+        Ball(int bx, int by, int instrument=9, string thenote="C4"){
             //x, y, instrument, thenote
             x = bx;
             y = by;
@@ -140,8 +142,8 @@ class Ball {
             height=TILESIZE;
             
             myinstrument = instrument;
-            mynote = thenote;
-            textnote = "C3";
+            mynote = note[thenote];
+            textnote = thenote;
             velocity = 90;
             timednote = mynote;
             
@@ -531,6 +533,7 @@ class Tile {
         bool ghost;
         string emitpattern;
         float emitevery;
+        int timer;
         string bnote;
         int binstrument;
         
@@ -580,6 +583,7 @@ class Tile {
             ghost = sghost;
             emitpattern="1";
             emitevery=2.0;
+            timer = 0;
             bnote = "";
             binstrument = -1;
             
@@ -666,7 +670,7 @@ class Tile {
                 //  just 1 for now
                 //patterncycle:1.0
                 //  if createpattern not there, just 1 ball per patterncycle.
-                
+                //cout << "CREATING\n";
                 Tokenize(extra, extrasplit, ";");
                 
                 for (int i = 0; i < extrasplit.size(); i++){
@@ -690,11 +694,10 @@ class Tile {
                     }
                     if (extrapart[0] == "note"){
                         bnote = extrapart[1];
-                        //cout << "Note: " << bnote << "\n";
                     }
                     if (extrapart[0] == "instrument"){
                         binstrument = atof(extrapart[1].c_str());
-                        //cout << "Instrument: " << binstrument << "\n";
+                        cout << "Instrument: " << binstrument << "\n";
                     }
 
 
@@ -772,7 +775,15 @@ class Tile {
             }
         }
         
+        void checkTimer(int elapsed_time){
+            timer += elapsed_time;
+            if (timer >= emitevery*1000){
+                timer = 0;
+                    cout << note[bnote]<< "(" <<bnote << ")\n";
+                storage.add(Ball(x+1, y+2, binstrument, bnote ));
+            }
         
+        }
         void checkCollision(int elapsed_time){
             if (type != 0 || ghost == false){
                 float hyp=0.0;
@@ -912,20 +923,19 @@ class Tile {
                                     ball->changeinstrument(binstrument);
                                 }
                             }
+                            if (func == 2){
+                                ball->kill();
+                            }
                             
                             if (!ghost){
                                 ball->hit();
                                 hitGlow();
                                 //if (ballpos[3] >= ballpos[2]){//going faster in y than x
                                 //NOTE: can probably do this better somehow, what if it's flying sideways..?
-                                    ball->setPos(ballpos[0], ballpos[1],   -(ballpos[2]), -(ballpos[3]+gravity*elapsed_time) );
+                                ball->setPos(ballpos[0], ballpos[1],   -(ballpos[2]), -(ballpos[3]+gravity*elapsed_time) );
                                 /*} else {
                                     ball->setPos(ballpos[0], ballpos[1],   -(ballpos[2]+gravity), ballpos[3] );
                                 } */ 
-                                
-                                if (func == 2){
-                                    ball->kill();
-                                }
                             }
                             
                             
@@ -948,6 +958,8 @@ class Tile {
         
             //check balls for collision here.
             checkCollision(elapsed_time);
+            
+            if (func == 1) checkTimer(elapsed_time);
             
             glPushMatrix();
                 glTranslated(x*TILESIZE, y*TILESIZE, 0);

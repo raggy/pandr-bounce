@@ -722,10 +722,10 @@ void Text(string msg, int x, int y, float size = 1.0, double r=1, double g=1, do
          
          
         if (msg.at(letter) == '.'){ // fullstop!
+            glVertex2f(0, 4);
             glVertex2f(1, 4);
-            glVertex2f(2, 4);
-            glVertex2f(2, 5);
             glVertex2f(1, 5);
+            glVertex2f(0, 5);
         }
         
         if (msg.at(letter) == '-'){

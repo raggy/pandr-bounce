@@ -37,6 +37,7 @@ int ballTexture();
 #define THETEXTURESLOL
 #endif
 
+
 void drawBall(double x, double y, int TILESIZE, string textnote);
 
 void drawLine(int theTILESIZE, GLfloat colour[], int angle, int thisx, int thisy);
