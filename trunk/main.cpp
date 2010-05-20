@@ -963,12 +963,17 @@ class Tile {
         }
         
         // draw the damn tile.
-        int draw(int elapsed_time){
+        int draw(int elapsed_time, int &stuff){
         
             //check balls for collision here.
             checkCollision(elapsed_time);
             
             if (func == 1) checkTimer(elapsed_time);
+            
+            if (type != 0 && type != 1 && !(type == 2 && func == 0 && hitstodestroy == 0)){
+                stuff ++;
+            }
+            
             
             glPushMatrix();
                 glTranslated(x*TILESIZE, y*TILESIZE, 0);
@@ -1167,6 +1172,10 @@ void draw() {
             frame = 0;
             sectime = 0;
         }
+        
+        //hack for the inventory being weird
+        //it's something to do with text.
+        int stuff = 0;
 
 
 //cout << "-----------------------------------------------------\n"
@@ -1197,8 +1206,9 @@ void draw() {
     
     for (int x = 0; x < WIDTH; x ++){
         for (int y = 0; y < HEIGHT; y++){
-            themap.tiles[x][y].draw(time_elapsed);
+            themap.tiles[x][y].draw(time_elapsed, stuff);
             //cout << themap.tiles[x][y].lolhi();
+            //cout << stuff << "\n";
         }
     }
     //cout << "\n";
@@ -1230,7 +1240,7 @@ void draw() {
         particles.draw(time_elapsed, TILESIZE, gravity);
     }
     
-    invent.draw(W_WIDTH, W_HEIGHT, cameraxmod, cameraymod);
+    invent.draw(W_WIDTH, W_HEIGHT, cameraxmod, cameraymod, stuff+ballz);
     invent.particlesdraw(time_elapsed, TILESIZE, gravity);
     Text("abcdefghijklmnopqrstuvwxyz 1234567890 # $", 0+cameraxmod,0+cameraymod, TILESIZE/10.0); // $ = flat, maybe could use unicode I guess
     
@@ -1650,7 +1660,7 @@ int main (int argc, char * argv[]) {
     // Initialise the window size
     glutInitWindowSize(W_WIDTH, W_HEIGHT);
     // Creates a window on the screen
-    glutCreateWindow ("BALL DROPPER v0.0");
+    glutCreateWindow ("Bounce");
 
     // Call the initialise function
     initialise();

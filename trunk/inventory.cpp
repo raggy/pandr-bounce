@@ -175,7 +175,7 @@ void Inventory::particlesdraw(int &elapsed_time, int &TILESIZE, float &gravity){
     }
 }
 
-void Inventory::draw(int &W_WIDTH, int &W_HEIGHT, int xmod, int ymod){
+void Inventory::draw(int &W_WIDTH, int &W_HEIGHT, int xmod, int ymod, int stuff){
             // draw the G and the buttons.
     GLfloat adarkblue[]  = {0.03, 0.15, 0.53, 1};
     GLfloat alightblue[] = {0.37, 0.65, 0.94, 1};
@@ -221,11 +221,13 @@ void Inventory::draw(int &W_WIDTH, int &W_HEIGHT, int xmod, int ymod){
 
         Text("Inventory", 4, 4, 3, 1,1,1);
         
-        
-        for (int i = 0; i < (int)things[currentpage].size(); i ++){
-            buttonGet(things[currentpage][i], W_WIDTH, W_HEIGHT, xmod, ymod);
+        if (stuff==0){
+            glTranslated(W_WIDTH-150+xmod, 0+ymod, 0);
         }
         
+        for (int i = 0; i < things[currentpage].size(); i ++){
+            buttonGet(things[currentpage][i], W_WIDTH, W_HEIGHT, xmod, ymod);
+        }
     }
     
     
@@ -233,7 +235,7 @@ void Inventory::draw(int &W_WIDTH, int &W_HEIGHT, int xmod, int ymod){
 }
 
 
-void Inventory::buttonGet(int &num, int &W_WIDTH, int &W_HEIGHT, int xmod = 0, int ymod = 0){
+void Inventory::buttonGet(int &num, int &W_WIDTH, int &W_HEIGHT, int xmod, int ymod){
             // display the button with the details from its area func.
     buttondisplay(num, buttonarea(num, 0, W_WIDTH, W_HEIGHT, xmod, ymod), buttonarea(num, 1, W_WIDTH, W_HEIGHT, xmod, ymod));
 }
