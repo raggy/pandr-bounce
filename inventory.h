@@ -72,7 +72,7 @@ class Inventory {
         
         void update(string action, int x, int y, int &W_WIDTH, int &W_HEIGHT, int xmod, int ymod, int &TILESIZE);
         void particlesdraw(int &elapsed_time, int &TILESIZE, float &gravity);
-        void draw(int &W_WIDTH, int &W_HEIGHT, int xmod, int ymod);
+        void draw(int &W_WIDTH, int &W_HEIGHT, int xmod, int ymod, int stuff);
         
         void buttonGet(int &num, int &W_WIDTH, int &W_HEIGHT, int xmod, int ymod);
         

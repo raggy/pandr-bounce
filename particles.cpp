@@ -65,7 +65,7 @@ void Particles::add(string psystem_type, float x, float y, float xv, float yv, f
     float yrand= 0.0;
     float xvrand= 0.0;
     float yvrand= 0.0;
-    cout << psystem_type << "\n";
+    //cout << psystem_type << "\n";
     if (psystem_type == "disintegrate"){
         for (int i =0; i < 100; i++){
             xrand = (rand() % 8);
@@ -213,7 +213,7 @@ void Particles::draw(int elapsed_time, int &TILESIZE, float &gravity){
     for (int i = 0; i < particle_list.size(); i++){
         if (particle_list[i].size() == 0){
             particle_list.erase(particle_list.begin()+i);
-            cout << "ERASURE\n";
+            //cout << "ERASURE\n";
         }
     }
 
