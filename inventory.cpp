@@ -28,6 +28,7 @@ string tostring(int number){
 
 
 Inventory::Inventory(int glocation){
+    theparts = Particles();
     nextdown = Tileinfo();
     currentpage = 0;
     location = glocation;
@@ -123,7 +124,7 @@ Inventory::Inventory(int glocation){
     
 }
 
-void Inventory::update(string action, int x, int y, int W_WIDTH, int W_HEIGHT, int xmod = 0, int ymod = 0){
+void Inventory::update(string action, int x, int y, int &W_WIDTH, int &W_HEIGHT, int xmod, int ymod, int &TILESIZE){
             //update with clicks and actions
             
     
@@ -146,6 +147,13 @@ void Inventory::update(string action, int x, int y, int W_WIDTH, int W_HEIGHT, i
                     y-ymod <= buttonarea(things[currentpage][i], 3, W_WIDTH, W_HEIGHT, xmod, ymod)){
                     
                     buttonfunction(things[currentpage][i]);
+                    if (things[currentpage][i] == 22 || things[currentpage][i] == 33 || things[currentpage][i] == 37 || things[currentpage][i] == 38){
+                        theparts.add("burst", x/TILESIZE, y/TILESIZE, 0, 0, 1.0, 0.6, 0.6);
+                    }
+                    if (things[currentpage][i] >= 3 && things[currentpage][i]
+                     <=14){
+                        theparts.add("burst", x/TILESIZE, y/TILESIZE, 0, 0, 0.6, 1.0, 0.6);
+                    }
                     break;
                     
                 }
@@ -161,7 +169,13 @@ void Inventory::update(string action, int x, int y, int W_WIDTH, int W_HEIGHT, i
     
 }
 
-void Inventory::draw(int W_WIDTH, int W_HEIGHT, int xmod, int ymod){
+void Inventory::particlesdraw(int &elapsed_time, int &TILESIZE, float &gravity){
+    if (theparts.getSize() != 0){
+        theparts.draw(elapsed_time, TILESIZE, gravity);
+    }
+}
+
+void Inventory::draw(int &W_WIDTH, int &W_HEIGHT, int xmod, int ymod){
             // draw the G and the buttons.
     GLfloat adarkblue[]  = {0.03, 0.15, 0.53, 1};
     GLfloat alightblue[] = {0.37, 0.65, 0.94, 1};
@@ -219,12 +233,12 @@ void Inventory::draw(int W_WIDTH, int W_HEIGHT, int xmod, int ymod){
 }
 
 
-void Inventory::buttonGet(int num, int W_WIDTH, int W_HEIGHT, int xmod = 0, int ymod = 0){
+void Inventory::buttonGet(int &num, int &W_WIDTH, int &W_HEIGHT, int xmod = 0, int ymod = 0){
             // display the button with the details from its area func.
     buttondisplay(num, buttonarea(num, 0, W_WIDTH, W_HEIGHT, xmod, ymod), buttonarea(num, 1, W_WIDTH, W_HEIGHT, xmod, ymod));
 }
 
-void Inventory::buttondisplay(int num, int xoff, int yoff){
+void Inventory::buttondisplay(int &num, int xoff, int yoff){
             //display the button
     GLfloat black[]      = {0,0,0, 1};
     GLfloat white[]      = {1,1,1, 1};
@@ -502,7 +516,7 @@ void Inventory::buttondisplay(int num, int xoff, int yoff){
     }
 }
 
-int Inventory::buttonarea(int num, int part, int W_WIDTH, int W_HEIGHT, int xmod=0, int ymod=0){
+int Inventory::buttonarea(int &num, int part, int &W_WIDTH, int &W_HEIGHT, int xmod=0, int ymod=0){
         //get the button's position and area
         
     int arraytoreturn[4]; //x1, y1, x2, y2
@@ -660,7 +674,7 @@ int Inventory::buttonarea(int num, int part, int W_WIDTH, int W_HEIGHT, int xmod
     return arraytoreturn[part];
 }
 
-void Inventory::buttonfunction(int num){
+void Inventory::buttonfunction(int &num){
         // what happens when you click a button.
         
     cout << num << "\n";

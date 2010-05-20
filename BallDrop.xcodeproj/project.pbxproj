@@ -22,6 +22,7 @@
 		5DC57CFE1195E21400282AE8 /* items.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5DC57CFD1195E21400282AE8 /* items.cpp */; };
 		5DD4A03510FF2D63001D9A2D /* GLUT.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5DB4DAC710F7EB7100E69B9A /* GLUT.framework */; };
 		5DD4A03610FF2D63001D9A2D /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5DB4DAC910F7EB7900E69B9A /* OpenGL.framework */; };
+		5DEF536A11A4183A0071C2B9 /* particles.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5DEF536911A4183A0071C2B9 /* particles.cpp */; };
 		5DF2F6D71190480E005CC396 /* text.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5DF2F6D61190480E005CC396 /* text.cpp */; };
 		8DD76F650486A84900D96B5E /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 08FB7796FE84155DC02AAC07 /* main.cpp */; settings = {ATTRIBUTES = (); COMPILER_FLAGS = "-Wall -D __MACOSX_CORE__"; }; };
 		8DD76F6A0486A84900D96B5E /* BallDrop.1 in CopyFiles */ = {isa = PBXBuildFile; fileRef = C6859E8B029090EE04C91782 /* BallDrop.1 */; };
@@ -64,6 +65,8 @@
 		5DC57CFC1195E21400282AE8 /* items.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = items.h; sourceTree = "<group>"; };
 		5DC57CFD1195E21400282AE8 /* items.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = items.cpp; sourceTree = "<group>"; };
 		5DDBEAEF10FF765800BB4444 /* notes.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = notes.txt; sourceTree = "<group>"; };
+		5DEF536811A4183A0071C2B9 /* particles.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = particles.h; sourceTree = "<group>"; };
+		5DEF536911A4183A0071C2B9 /* particles.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = particles.cpp; sourceTree = "<group>"; };
 		5DF2F6D51190480E005CC396 /* text.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = text.h; sourceTree = "<group>"; };
 		5DF2F6D61190480E005CC396 /* text.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = text.cpp; sourceTree = "<group>"; };
 		5DF436C9113AD6E7002E68DD /* main.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = main.h; sourceTree = "<group>"; };
@@ -133,6 +136,8 @@
 				5DF2F6D61190480E005CC396 /* text.cpp */,
 				5D7E142111971849001E9C49 /* inventory.h */,
 				5D7E142211971849001E9C49 /* inventory.cpp */,
+				5DEF536811A4183A0071C2B9 /* particles.h */,
+				5DEF536911A4183A0071C2B9 /* particles.cpp */,
 			);
 			name = Source;
 			sourceTree = "<group>";
@@ -201,6 +206,7 @@
 				5DF2F6D71190480E005CC396 /* text.cpp in Sources */,
 				5DC57CFE1195E21400282AE8 /* items.cpp in Sources */,
 				5D7E142311971849001E9C49 /* inventory.cpp in Sources */,
+				5DEF536A11A4183A0071C2B9 /* particles.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
