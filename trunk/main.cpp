@@ -23,6 +23,9 @@
 #include "items.h"
 #endif
 #include "inventory.h"
+#ifndef PARTICLES_H
+#include "particles.h"
+#endif
 
 #define PI 3.14159265
 
@@ -59,6 +62,8 @@ GLfloat white[] = {1,1,1,1};
 GLfloat black[] = {0,0,0,1};
 
 map <string, int> note;
+
+Particles particles = Particles();
 
 
 
@@ -224,6 +229,7 @@ class Ball {
         void kill(){
             ded = 1;
             ballz --;
+            particles.add("disintegrate", x-1, y-1, xv, yv, 1.0f, 1.0f, 0.0f);
         }
         
         bool isded(){
@@ -715,6 +721,7 @@ class Tile {
                     type = 0;
                     func = 0;
                     extra = "";
+                    particles.add("disintegrate", x, y, 0, 0, 1.0f, 0.0f, 0.0f);
                 } else {
                     hitstodestroy--;
                 }
@@ -781,6 +788,7 @@ class Tile {
                 timer = 0;
                     cout << note[bnote]<< "(" <<bnote << ")\n";
                 storage.add(Ball(x+1, y+2, binstrument, bnote ));
+                 particles.add("poof", x, y+1, 0, 0, 1.0, 1.0, 0.0);
             }
         
         }
@@ -915,6 +923,7 @@ class Tile {
                             //cout << "thock (" << ball->getID() << ")\n"; 
                             
                             if (func == 3){
+                                particles.add("schlup", x, y-1, 0, 0, 1.0, 0.0, 0.0);
                                 if (bnote != ""){
                                     ball->changenote(bnote);
                                     cout << "NOTE CHANGE: " << bnote << "\n";
@@ -932,7 +941,7 @@ class Tile {
                                 hitGlow();
                                 //if (ballpos[3] >= ballpos[2]){//going faster in y than x
                                 //NOTE: can probably do this better somehow, what if it's flying sideways..?
-                                ball->setPos(ballpos[0], ballpos[1],   -(ballpos[2]), -(ballpos[3]+gravity*elapsed_time) );
+                                ball->setPos(ballpos[0], ballpos[1],   (ballpos[2]), -(ballpos[3]+gravity*elapsed_time) );
                                 /*} else {
                                     ball->setPos(ballpos[0], ballpos[1],   -(ballpos[2]+gravity), ballpos[3] );
                                 } */ 
@@ -1050,7 +1059,9 @@ class Map {
             }*/
                 
         }
-        
+        Tile returnAt(int x, int y){
+            return tiles[x][y];
+        }
         void change (int x, int y, int type = 0, int func = 0, string extra = "0", int hits = 0){
             tiles[x][y] = Tile(tiles[x][y].uid, x, y, type, func, extra, hits);
         }
@@ -1215,9 +1226,12 @@ void draw() {
             ++ball;
         }
     }
+    if (particles.getSize() != 0){
+        particles.draw(time_elapsed, TILESIZE, gravity);
+    }
     
     invent.draw(W_WIDTH, W_HEIGHT, cameraxmod, cameraymod);
-    
+    invent.particlesdraw(time_elapsed, TILESIZE, gravity);
     Text("abcdefghijklmnopqrstuvwxyz 1234567890 # $", 0+cameraxmod,0+cameraymod, TILESIZE/10.0); // $ = flat, maybe could use unicode I guess
     
     string textfps = "fps ";
@@ -1342,9 +1356,14 @@ void Mouse(int button, int state, int x, int y){
                         
                         if (((x+cameraxmod)>= 0 && (x+cameraxmod) < W_WIDTH) && ((y+cameraymod)>= 0 && (y+cameraymod) < W_HEIGHT)){
                             themap.change((x+cameraxmod)/TILESIZE,(y+cameraymod)/TILESIZE, invent.nextdown.type, invent.nextdown.func, invent.nextdown.extra, invent.nextdown.hitstodestroy);
+                            if (invent.nextdown.type == 1){
+                                particles.add("poof", (x+cameraxmod)/TILESIZE, (y+cameraymod)/TILESIZE, 0, 0, 0.0, 1.0, 0.0);
+                            } else if (invent.nextdown.type == 2){
+                                particles.add("poof", (x+cameraxmod)/TILESIZE, (y+cameraymod)/TILESIZE, 0, 0, 1.0, 0.0, 0.0);
+                            }
                         }
                     } else {
-                        invent.update("click", x+cameraxmod, y+cameraymod, W_WIDTH, W_HEIGHT, cameraxmod, cameraymod);
+                        invent.update("click", x+cameraxmod, y+cameraymod, W_WIDTH, W_HEIGHT, cameraxmod, cameraymod, TILESIZE);
                     }
                     break;
             }
@@ -1353,6 +1372,13 @@ void Mouse(int button, int state, int x, int y){
             switch (state){
                 case 1:
                     if (((x+cameraxmod)>= 0 && (x+cameraxmod) < W_WIDTH) && ((y+cameraymod)>= 0 && (y+cameraymod) < W_HEIGHT)){
+                    
+                        if (themap.returnAt((x+cameraxmod)/TILESIZE,(y+cameraymod)/TILESIZE).type == 1){
+                            particles.add("disintegrate", (x+cameraxmod)/TILESIZE, (y+cameraymod)/TILESIZE, 0, 0, 0.0, 1.0, 0.0);
+                            
+                        } else if (themap.returnAt((x+cameraxmod)/TILESIZE,(y+cameraymod)/TILESIZE).type == 2){
+                            particles.add("disintegrate", (x+cameraxmod)/TILESIZE, (y+cameraymod)/TILESIZE, 0, 0, 1.0, 0.0, 0.0);
+                        }
                         themap.change((x+cameraxmod)/TILESIZE,(y+cameraymod)/TILESIZE, 0);
                     }
                     break;
