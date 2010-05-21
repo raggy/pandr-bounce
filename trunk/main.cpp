@@ -708,7 +708,9 @@ class Tile {
 
 
                     extrapart.pop_back();
-                    extrapart.pop_back();
+                    if (extrapart.size() != 0){
+                        extrapart.pop_back();
+                    }
 
                 }
             
@@ -923,7 +925,7 @@ class Tile {
                             //cout << "thock (" << ball->getID() << ")\n"; 
                             
                             if (func == 3){
-                                particles.add("schlup", x, y-1, 0, 0, 1.0, 0.0, 0.0);
+                                particles.add("schlup", x, y, 0, 0, 1.0, 0.0, 0.0);
                                 if (bnote != ""){
                                     ball->changenote(bnote);
                                     cout << "NOTE CHANGE: " << bnote << "\n";
@@ -973,7 +975,7 @@ class Tile {
             if (type != 0 && type != 1 && !(type == 2 && func == 0 && hitstodestroy == 0)){
                 stuff ++;
             }
-            
+            string text = "";
             
             glPushMatrix();
                 glTranslated(x*TILESIZE, y*TILESIZE, 0);
@@ -996,9 +998,15 @@ class Tile {
                         if (hitstodestroy != 0){
                             drawBlockGlow(TILESIZE, glow[0], glow[1], glow[2]);
                         }
-                        drawBlock(TILESIZE, temp, func, bnote);
-                        if (hitstodestroy != 0){
-                            Text(itostring(hitstodestroy), 0, 0, TILESIZE/10);
+                        if (hitstodestroy != 0 && (func == 0 || func == 2)){
+                            text = itostring(hitstodestroy);
+                        }
+                        if (func == 1 || func == 3){
+                            text = bnote;
+                        }
+                        drawBlock(TILESIZE, temp, func, text);
+                        if (ghost){
+                            drawBlockGhost(TILESIZE);
                         }
                         break;
                     default:
@@ -1030,7 +1038,6 @@ class Map {
             //int * p;
             //i = 2;
             //p= new (nothrow) int[i];
-            
         
             width = w;
             height = h;
@@ -1040,6 +1047,9 @@ class Map {
             
                 tiles.push_back(dummy);
                 for (int j = 0; j < height; j++) {
+                    /*if (i == 0 && (j == 0 || j == 1)){
+                        tiles[i].push_back(Tile(uid, i, j, 2, 3, "note:E4;instrument:13;collides:0;", 0, false)); //static block
+                    }*/
                     if (i == 10 && j == 20){
                         tiles[i].push_back(Tile(uid, i, j, 1, 0, "", 0, false)); //static line
                     } else if (i == 4 && j == 20){
@@ -1156,31 +1166,27 @@ int now = 0;
 int frame = 0;
 int sectime = 0;
 
+
 // Draw function void
 void draw() {
-
-
-        now = glutGet(GLUT_ELAPSED_TIME);
-        time_elapsed = now - last_time;
-        last_time = now;
-        //fps = time_elapsed;
-        frame ++;
-        sectime += time_elapsed;
-        
-        if (sectime >= 1000){
-            fps = frame;
-            frame = 0;
-            sectime = 0;
-        }
-        
-        //hack for the inventory being weird
-        //it's something to do with text.
-        int stuff = 0;
-
-
-//cout << "-----------------------------------------------------\n"
-//cout << "----- DRAW START -------------------------------------\n";
+    now = glutGet(GLUT_ELAPSED_TIME);
+    time_elapsed = now - last_time;
+    last_time = now;
+    //fps = time_elapsed;
+    frame ++;
+    sectime += time_elapsed;
     
+    if (sectime >= 1000){
+        fps = frame;
+        frame = 0;
+        sectime = 0;
+    }
+    
+    //hack for the inventory being weird
+    //it's something to do with text.
+    int stuff = 0;
+
+   
     // Clears the color buffer bit and depth buffer bit
     glClear (GL_COLOR_BUFFER_BIT);
 
@@ -1242,15 +1248,15 @@ void draw() {
     
     invent.draw(W_WIDTH, W_HEIGHT, cameraxmod, cameraymod, stuff+ballz);
     invent.particlesdraw(time_elapsed, TILESIZE, gravity);
-    Text("abcdefghijklmnopqrstuvwxyz 1234567890 # $", 0+cameraxmod,0+cameraymod, TILESIZE/10.0); // $ = flat, maybe could use unicode I guess
+    //Text("abcdefghijklmnopqrstuvwxyz 1234567890 # $ . - *", 0+cameraxmod,0+cameraymod, TILESIZE/10.0); // $ = flat, maybe could use unicode I guess
     
     string textfps = "fps ";
     stringstream out;
     out << fps;
     textfps+= out.str();
-    //cout << textfps<< fps<< "\n";
-    Text(textfps, 0+cameraxmod, (W_HEIGHT-20+cameraymod), 2);
-    //Text(textfps, 0, 20, 2);
+    //Text(textfps, 0+cameraxmod, (W_HEIGHT-20+cameraymod), 2);
+
+    Text(textfps, 0+cameraxmod, (0+cameraymod), 2);
     
     /*// none of this works.
     // Create a pixmap font from a TrueType file.
@@ -1305,8 +1311,7 @@ void reshape(int w, int h) {
 float lastclock = 0.0;
 //int frame=0;
 //int last_time=0;
-//int time_elapsed;
-
+//int time_elapsed;        
 void idler(void) {
     if (clock() > lastclock){
         glutPostRedisplay();
@@ -1472,9 +1477,10 @@ void initialise(void) {
 void SpecialKeyboard(int key, int x, int y){
     cout << key << "\n";
     scrollamount = TILESIZE/2;
+
     switch(key) {
         case GLUT_KEY_LEFT:
-            if (cameraxmod >=scrollamount){
+            if (cameraxmod >=TILESIZE+scrollamount){
                 cameraxmod -=scrollamount;
             }
             break;
@@ -1482,7 +1488,7 @@ void SpecialKeyboard(int key, int x, int y){
             cameraxmod +=scrollamount;
             break;
         case GLUT_KEY_UP:
-            if (cameraymod >=scrollamount){
+            if (cameraymod >=TILESIZE+scrollamount){
                 cameraymod -=scrollamount;
             }
             break;
@@ -1591,6 +1597,7 @@ void Keyboard(unsigned char key, int A, int B) {
             break;
         case 'n':
             storage.add( Ball(11, 15) );
+            particles.add("poof", 11-1, 15-1, 0, 0, 1, 1, 0);
             break;
         case 'f':
             if (fullscreen){
@@ -1669,8 +1676,6 @@ int main (int argc, char * argv[]) {
 
     
     glutGameModeString("800x600:16@75");
-    
-    
 
     
     // Causes the program to enter an event-processing loop

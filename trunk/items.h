@@ -52,7 +52,10 @@ void drawBlock(int theTILESIZE, GLfloat colour[], int func, int x, int y, string
 void drawSomething(int theTILESIZE, GLfloat colour[]);
 void drawSomething(int theTILESIZE, GLfloat colour[], int x, int y);
 
-
 void drawBlockGlow(int theTILESIZE, float r, float g, float b);
+void drawBlockGlow(int theTILESIZE, float r, float g, float b, int x, int y);
+
+void drawBlockGhost(int theTILESIZE);
+void drawBlockGhost(int theTILESIZE, int x, int y);
 
 #endif

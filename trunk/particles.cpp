@@ -255,7 +255,6 @@ void Particles::draw(int elapsed_time, int &TILESIZE, float &gravity){
         }
     }
 }
-
 int Particles::getSize(){
     return particle_list.size();
 }

@@ -46,15 +46,17 @@ class Inventory {
     public:
         Particles theparts;
         Tileinfo nextdown;
+        Tileinfo oldnextdown;
         bool active;
         int currentpage;
         int location; //0123 = t r b l
         int width;
-        GLfloat black[];
-        GLfloat adarkblue[];
-        GLfloat alightblue[];
-        GLfloat linecolour[];
-        GLfloat blockcolour[];
+        GLfloat black[4];
+        GLfloat white[4];
+        GLfloat adarkblue[4];
+        GLfloat alightblue[4];
+        GLfloat linecolour[4];
+        GLfloat blockcolour[4];
         
         vector <int> thing;
         vector < vector <int> > things;

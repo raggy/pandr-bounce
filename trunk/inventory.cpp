@@ -30,6 +30,7 @@ string tostring(int number){
 Inventory::Inventory(int glocation){
     theparts = Particles();
     nextdown = Tileinfo();
+    oldnextdown = Tileinfo();
     currentpage = 0;
     location = glocation;
     active = true;//oh look an inventory, guess I move my mouse over there to get it.
@@ -43,6 +44,15 @@ Inventory::Inventory(int glocation){
     instrument[1] = "Piano";
     theinstrument = 9;
     ballevery = 2.0;
+    
+    
+    black[0]=0; black[1]=0; black[2]=0; black[3]=1;
+    white[0]=1; white[1]=1; white[2]=1; white[3]=1;
+    linecolour[0]=0; linecolour[1]=1; linecolour[2]=0; linecolour[3]=1;
+    blockcolour[0]=1; blockcolour[1]=0; blockcolour[2]=0; blockcolour[3]=1;
+    adarkblue[0]=0.03; adarkblue[1]=0.15; adarkblue[2]=0.53; adarkblue[3]=1;
+    alightblue[0]=0.37; alightblue[1]=0.65; alightblue[2]=0.94; alightblue[3]=1;
+    
     
     things.push_back(thing);//initial menu.
     
@@ -67,7 +77,7 @@ Inventory::Inventory(int glocation){
     things[3].push_back(19);//hitstodie down 19
     things[3].push_back(21);//hitsdie display 21
     things[3].push_back(20);//hitstodie up 20
-    things[3].push_back(22);//static block lul 22
+    //things[3].push_back(22);//static block lul 22
     
     things.push_back(thing);//modifier block menu
     things[4].push_back(2);//back
@@ -84,7 +94,7 @@ Inventory::Inventory(int glocation){
     things[4].push_back(30);// instrument display 30 <- give a limited choice for now. Glock, xy, pinano, drum?
     things[4].push_back(31);//instr up 31
     things[4].push_back(32);//instr down 32
-    things[4].push_back(33);// modifier block lul 33
+    //things[4].push_back(33);// modifier block lul 33
     
     things.push_back(thing);//creator block menu
     things[5].push_back(2);//back
@@ -104,7 +114,7 @@ Inventory::Inventory(int glocation){
     things[5].push_back(34);//emits display 34 <- scale should be 2s default. down to 0.5s, up to 5s.
     things[5].push_back(35);//emits up 35
     things[5].push_back(36);//emits down 36
-    things[5].push_back(37);//creator block lul 37
+    //things[5].push_back(37);//creator block lul 37
     
     things.push_back(thing);//destroyer block menu
     things[6].push_back(2);//back
@@ -112,7 +122,7 @@ Inventory::Inventory(int glocation){
     things[6].push_back(21);//hitsdie display 21
     things[6].push_back(20);//hitstodie up 20
     things[6].push_back(23);//collides checkbox 23
-    things[6].push_back(38);// destroyer block lul 38
+    //things[6].push_back(38);// destroyer block lul 38
     
     
     /*for (int i = 2; i < 50; i++){
@@ -147,13 +157,12 @@ void Inventory::update(string action, int x, int y, int &W_WIDTH, int &W_HEIGHT,
                     y-ymod <= buttonarea(things[currentpage][i], 3, W_WIDTH, W_HEIGHT, xmod, ymod)){
                     
                     buttonfunction(things[currentpage][i]);
-                    if (things[currentpage][i] == 22 || things[currentpage][i] == 33 || things[currentpage][i] == 37 || things[currentpage][i] == 38){
-                        theparts.add("burst", x/TILESIZE, y/TILESIZE, 0, 0, 1.0, 0.6, 0.6);
+                    /*if ((things[currentpage][i] >= 15 && things[currentpage][i] <= 18) || things[currentpage][i] == 37 || things[currentpage][i] == 38){
+                        theparts.add("burst", 20/TILESIZE, (W_HEIGHT-20)/TILESIZE, 0, 0, 1.0, 0.6, 0.6);
                     }
-                    if (things[currentpage][i] >= 3 && things[currentpage][i]
-                     <=14){
-                        theparts.add("burst", x/TILESIZE, y/TILESIZE, 0, 0, 0.6, 1.0, 0.6);
-                    }
+                    if (things[currentpage][i] >= 3 && things[currentpage][i] <=14){
+                        theparts.add("burst", 20/TILESIZE, (W_HEIGHT-20)/TILESIZE, 0, 0, 0.6, 1.0, 0.6);
+                    }*/
                     break;
                     
                 }
@@ -170,15 +179,87 @@ void Inventory::update(string action, int x, int y, int &W_WIDTH, int &W_HEIGHT,
 }
 
 void Inventory::particlesdraw(int &elapsed_time, int &TILESIZE, float &gravity){
+    int lol = 10;
     if (theparts.getSize() != 0){
-        theparts.draw(elapsed_time, TILESIZE, gravity);
+        theparts.draw(elapsed_time, lol, gravity);
     }
 }
 
 void Inventory::draw(int &W_WIDTH, int &W_HEIGHT, int xmod, int ymod, int stuff){
             // draw the G and the buttons.
-    GLfloat adarkblue[]  = {0.03, 0.15, 0.53, 1};
-    GLfloat alightblue[] = {0.37, 0.65, 0.94, 1};
+    
+    if ((oldnextdown.type != nextdown.type) || (oldnextdown.func != nextdown.func)
+    || (oldnextdown.extra != nextdown.extra) || (oldnextdown.hitstodestroy != nextdown.hitstodestroy)){
+        oldnextdown = nextdown;
+        if (nextdown.type == 1){
+            theparts.add("burst", 20/10+xmod, (W_HEIGHT-20)/10+ymod, 0, 0, 0.6, 1.0, 0.6);
+        } else {
+            theparts.add("burst", 20/10+xmod, (W_HEIGHT-20)/10+ymod, 0, 0, 1.0, 0.6, 0.6);
+        }
+        cout << "farts\n";
+    }
+    
+    glPushMatrix();
+        glTranslated(0+xmod, W_HEIGHT-60+ymod, 0);// 0 or 1 for z? or what?
+            
+        glBegin(GL_QUADS);
+        glColor4f(adarkblue[0], adarkblue[1], adarkblue[2], adarkblue[3]);
+            glVertex2f(0,0);
+            glVertex2f(120,0);
+            glVertex2f(120,60);
+            glVertex2f(0,60);
+        glColor4f(0,0,0,1);
+            glVertex2f(2,22);
+            glVertex2f(38,22);
+            glVertex2f(38,58);
+            glVertex2f(2,58);
+        glEnd();
+    
+    glPopMatrix();
+    
+    if (nextdown.type == 1){   
+        drawLine(30, linecolour, atoi(nextdown.extra.c_str()), 5+xmod, W_HEIGHT-35+ymod);
+    } else {
+        
+        if (nextdown.hitstodestroy != 0){
+            drawBlockGlow(30, 0, 1, 0, 5+xmod, W_HEIGHT-35+ymod);
+        }
+        if ((nextdown.func == 2 || nextdown.func == 0) && nextdown.hitstodestroy != 0){
+            drawBlock(30, blockcolour, nextdown.func, 5+xmod, W_HEIGHT-35+ymod, itostring(nextdown.hitstodestroy));
+        } else if (nextdown.func == 1 || nextdown.func == 3){
+            drawBlock(30, blockcolour, nextdown.func, 5+xmod, W_HEIGHT-35+ymod, note+itostring(octave));
+        } else {
+            drawBlock(30, blockcolour, nextdown.func, 5+xmod, W_HEIGHT-35+ymod);
+        }
+        
+        if (!collides){
+            drawBlockGhost(30, 5+xmod, W_HEIGHT-35+ymod);
+        }
+    }
+    
+
+    Text("Next:", 2+xmod, W_HEIGHT-58+ymod, 2, white);
+    if (nextdown.type == 1){
+        Text("Line", 40+xmod, W_HEIGHT-58+ymod, 2, linecolour);
+        Text("Angle: ", 42+xmod, W_HEIGHT-35+ymod, 2, white);
+        Text(nextdown.extra+"*", 60+xmod, W_HEIGHT-20+ymod, 2, white);
+    } else if (nextdown.type == 2){
+        if (nextdown.func == 0){
+            Text("Block", 40+xmod, W_HEIGHT-58+ymod, 2, blockcolour);
+        } else if (nextdown.func == 3){
+            Text("Changer", 40+xmod, W_HEIGHT-58+ymod, 2, blockcolour);
+        } else if (nextdown.func == 1){
+            Text("Creator", 40+xmod, W_HEIGHT-58+ymod, 2, blockcolour);
+        } else if (nextdown.func == 2){
+            Text("Detroyer", 40+xmod, W_HEIGHT-58+ymod, 2, blockcolour);
+        }
+            
+            
+    
+    }
+    
+        
+    
     glPushMatrix();
     if (active == false){
        
@@ -242,12 +323,7 @@ void Inventory::buttonGet(int &num, int &W_WIDTH, int &W_HEIGHT, int xmod, int y
 
 void Inventory::buttondisplay(int &num, int xoff, int yoff){
             //display the button
-    GLfloat black[]      = {0,0,0, 1};
-    GLfloat white[]      = {1,1,1, 1};
-    GLfloat linecolour[] = {0,1,0, 1};
-    GLfloat blockcolour[] = {1,0,0, 1};
-    GLfloat adarkblue[]  = {0.03, 0.15, 0.53, 1};
-    GLfloat alightblue[] = {0.37, 0.65, 0.94, 1};
+   
     int angle;
     if (num==0){
         //big line
@@ -325,7 +401,7 @@ void Inventory::buttondisplay(int &num, int xoff, int yoff){
         glEnd();
         angle = 0+ ((num-3)*15);
         drawLine(50, linecolour, angle, xoff, yoff);
-    } else if ((num >= 15 && num <= 18) || num == 22 || num == 33 || num == 37 || num == 38){
+    } else if ((num >= 15 && num <= 18)){// || num == 22 || num == 33 || num == 37 || num == 38){
         glBegin(GL_QUADS);
         glColor4f(black[0], black[1], black[2], black[3]);
             glVertex2f(xoff-0,yoff-0);
@@ -342,9 +418,9 @@ void Inventory::buttondisplay(int &num, int xoff, int yoff){
             Text("Creator", xoff+12, yoff, TextHeight(10));
         } else if (num == 18){
             Text("Destroyer", xoff+4, yoff, TextHeight(10));
-        } else if (num == 22 || num == 33 || num == 37 || num == 38){
+        }/* else if (num == 22 || num == 33 || num == 37 || num == 38){
             Text("Finalise", xoff+8, yoff, TextHeight(10));
-        }
+        }*/
     } else if (num == 19 || num == 20 || num == 35 || num == 36){ //minus and plus signs
         glBegin(GL_QUADS);
         glColor4f(black[0], black[1], black[2], black[3]);
@@ -385,7 +461,11 @@ void Inventory::buttondisplay(int &num, int xoff, int yoff){
         }
         
     } else if (num == 23){//collides checkbox
-        Text("Balls hit this", xoff-7, yoff-10);
+        if (collides){
+            Text("Balls hit this", xoff-7, yoff-10);
+        } else {
+            Text("Balls don't hit this", xoff-19, yoff-10);
+        }
         glBegin(GL_QUADS);
         glColor4f(black[0], black[1], black[2], black[3]);
             glVertex2f(xoff+0,yoff+0);
@@ -422,19 +502,24 @@ void Inventory::buttondisplay(int &num, int xoff, int yoff){
         glEnd();
         
     } else if (num == 24){ // display note
+        //NOTE TO FUTURE SELF
+        //commented stuff on #24 is for accidentals.
+    
         glBegin(GL_QUADS);
         glColor4f(black[0], black[1], black[2], black[3]);
             glVertex2f(xoff+0,yoff+0);
-            glVertex2f(xoff+40,yoff+0);
-            glVertex2f(xoff+40,yoff+30);
+            /*glVertex2f(xoff+40,yoff+0);
+            glVertex2f(xoff+40,yoff+30);*/
+            glVertex2f(xoff+20,yoff+0);
+            glVertex2f(xoff+20,yoff+30);
             glVertex2f(xoff+0,yoff+30);
         glEnd();
         Text("note", xoff-18, yoff+12);
-        if (note.size() == 2){
+        //if (note.size() == 2){
             Text(note, xoff+6, yoff+5, 4, white);
-        } else {
+        /*} else {
             Text(note, xoff+26, yoff+5, 4, white);
-        }
+        }*/
     } else if (num == 27){ // display octave
         glBegin(GL_QUADS);
         glColor4f(black[0], black[1], black[2], black[3]);
@@ -612,20 +697,20 @@ int Inventory::buttonarea(int &num, int part, int &W_WIDTH, int &W_HEIGHT, int x
         arraytoreturn[1] = adjusty;
         arraytoreturn[2] = adjustx+40;
         arraytoreturn[3] = adjusty+30;
-    } else if (num == 22){
+    /*} else if (num == 22){
         arraytoreturn[0] = 40;
         arraytoreturn[1] = 250;
         arraytoreturn[2] = 40+80;
-        arraytoreturn[3] = 250+80;
+        arraytoreturn[3] = 250+80;*/
     } else if (num == 23){
         arraytoreturn[0] = 60;
         arraytoreturn[1] = 180;
         arraytoreturn[2] = 60+40;
         arraytoreturn[3] = 180+40;
     } else if (num == 24){
-        arraytoreturn[0] = 40;
+        arraytoreturn[0] = 60;//40;
         arraytoreturn[1] = 260;
-        arraytoreturn[2] = 40+40;
+        arraytoreturn[2] = 60+40;//40+40;
         arraytoreturn[3] = 260+30;
     } else if (num == 25 || num == 26 || num == 28 || num == 29){
         arraytoreturn[0] = adjustx;
@@ -647,7 +732,7 @@ int Inventory::buttonarea(int &num, int part, int &W_WIDTH, int &W_HEIGHT, int x
         arraytoreturn[1] = adjusty;
         arraytoreturn[2] = adjustx+60;
         arraytoreturn[3] = adjusty+20;
-    } else if (num == 33){
+    }/* else if (num == 33){
         arraytoreturn[0] = 40;
         arraytoreturn[1] = 400;
         arraytoreturn[2] = 40+80;
@@ -662,16 +747,16 @@ int Inventory::buttonarea(int &num, int part, int &W_WIDTH, int &W_HEIGHT, int x
         arraytoreturn[1] = 500;
         arraytoreturn[2] = 40+80;
         arraytoreturn[3] = 500+80;
-    }
+    }*/
     
     
-    glBegin(GL_LINE_LOOP);
+    /*glBegin(GL_LINE_LOOP);
         glColor4f(1,0,0,1);
         glVertex2f(arraytoreturn[0], arraytoreturn[1]);
         glVertex2f(arraytoreturn[2], arraytoreturn[1]);
         glVertex2f(arraytoreturn[2], arraytoreturn[3]);
         glVertex2f(arraytoreturn[0], arraytoreturn[3]);
-    glEnd();
+    glEnd();*/
     
     return arraytoreturn[part];
 }
@@ -706,20 +791,45 @@ void Inventory::buttonfunction(int &num){
         /*for (int i = 0; i < things[currentpage].size(); i++){
             cout << "Thing: " << things[currentpage][i] << "\n";
         }*/
+        nextdown.type = 2;
+        nextdown.hitstodestroy = hitstodie;
+        nextdown.extra = "";
+        switch (num){
+            case 15:
+                nextdown.func=0;
+                break;
+            case 16:
+                nextdown.func=3;
+                break;
+            case 17:
+                nextdown.func=1;
+                nextdown.extra+="createpattern:1;patterncycle:"+ftostring(ballevery)+";";
+                break;
+            case 18:
+                nextdown.func=2;
+                break;
+        }
+        if (num != 15){ nextdown.extra += "collides:"+itostring(collides)+";";}
+        
+        if (num == 16 || num == 17){
+            nextdown.extra+="note:"+note+itostring(octave)+";";
+            nextdown.extra+="instrument:"+itostring(theinstrument)+";";
+        }
+        
     } else if (num == 19){// hitstodie down
         if (hitstodie > 0){
             hitstodie --;
         }
+        nextdown.hitstodestroy = hitstodie;
         
     } else if (num == 20){// hitstodie up
         hitstodie++;
+        nextdown.hitstodestroy = hitstodie;
         
     // 21: hitstodie display has no click function, yet.
-    
+    /*
     } else if (num == 22 || num == 33 || num == 37 || num == 38){ // put down a block.
-        nextdown.type = 2;
-        nextdown.hitstodestroy = hitstodie;
-        nextdown.extra = "";
+        
         
         if (num != 22){ nextdown.extra += "collides:"+itostring(collides)+";";}
         
@@ -737,14 +847,15 @@ void Inventory::buttonfunction(int &num){
             nextdown.extra+="createpattern:1;patterncycle:"+ftostring(ballevery)+";";
         } else if (num == 38){
             nextdown.func=2;
-        }
+        }*/
         
     } else if (num == 23){
         collides = !collides;
+        if (num != 22){ nextdown.extra += "collides:"+itostring(collides)+";";}
     
     
     } else if (num == 25){
-        if (note=="C") {note="C#";}
+        /*if (note=="C") {note="C#";}
         else if (note=="C#"){note="D";}
         else if (note=="D") {note="D#";}
         else if (note=="D#"){note="E";}
@@ -755,9 +866,17 @@ void Inventory::buttonfunction(int &num){
         else if (note=="G#"){note="A";}
         else if (note=="A") {note="A#";}
         else if (note=="A#"){note="B";}
+        else if (note=="B") {note="C";}*/
+        if (note=="C") {note="D";}
+        else if (note=="D") {note="E";}
+        else if (note=="E") {note="F";}
+        else if (note=="F") {note="G";}
+        else if (note=="G") {note="A";}
+        else if (note=="A") {note="B";}
         else if (note=="B") {note="C";}
+            nextdown.extra+="note:"+note+itostring(octave)+";";
     } else if (num == 26){
-        if (note=="C") {note="B";}
+        /*if (note=="C") {note="B";}
         else if (note=="C#"){note="C";}
         else if (note=="D") {note="C#";}
         else if (note=="D#"){note="D";}
@@ -768,26 +887,40 @@ void Inventory::buttonfunction(int &num){
         else if (note=="G#"){note="G";}
         else if (note=="A") {note="G#";}
         else if (note=="A#"){note="A";}
-        else if (note=="B") {note="A#";}
+        else if (note=="B") {note="A#";}*/
+        if (note=="C") {note="B";}
+        else if (note=="D") {note="C";}
+        else if (note=="E") {note="D";}
+        else if (note=="F") {note="E";}
+        else if (note=="G") {note="F";}
+        else if (note=="A") {note="G";}
+        else if (note=="B") {note="C";}
+            nextdown.extra+="note:"+note+itostring(octave)+";";
     } else if (num == 28){
         if (octave < 9) octave++;
+        nextdown.extra+="note:"+note+itostring(octave)+";";
     } else if (num == 29){
         if (octave >3) octave--;
+        nextdown.extra+="note:"+note+itostring(octave)+";";
     } else if (num == 31){
         if (theinstrument==9) {theinstrument=13;}
         else if (theinstrument==13) {theinstrument=1;}
         else if (theinstrument==1) {theinstrument=9;}
+            nextdown.extra+="instrument:"+itostring(theinstrument)+";";
     } else if (num == 32){
         if (theinstrument==9) {theinstrument=1;}
         else if (theinstrument==1) {theinstrument=13;}
         else if (theinstrument==13) {theinstrument=9;}
+            nextdown.extra+="instrument:"+itostring(theinstrument)+";";
     } else if (num == 35){
         if (ballevery < 5){
            ballevery += 0.5;
+            nextdown.extra+="createpattern:1;patterncycle:"+ftostring(ballevery)+";";
         }
     } else if (num == 36){
         if (ballevery >=1){
             ballevery -= 0.5;
+            nextdown.extra+="createpattern:1;patterncycle:"+ftostring(ballevery)+";";
         }
         
     }
