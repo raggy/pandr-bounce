@@ -224,19 +224,27 @@ void drawBlock(int theTILESIZE, GLfloat colour[], int func, int x, int y, string
         
         if (func == 2){
             glColor4f(1,1,1,1);
-            glVertex2f((theTILESIZE/5), (theTILESIZE/10));
-            glVertex2f(theTILESIZE-(theTILESIZE/10), theTILESIZE-(theTILESIZE/5));
-            glVertex2f(theTILESIZE-(theTILESIZE/5), theTILESIZE-(theTILESIZE/10));
-            glVertex2f((theTILESIZE/10), (theTILESIZE/5));
+            glVertex2f((theTILESIZE/5)+x, (theTILESIZE/10)+y);
+            glVertex2f(theTILESIZE-(theTILESIZE/10)+x, theTILESIZE-(theTILESIZE/5)+y);
+            glVertex2f(theTILESIZE-(theTILESIZE/5)+x, theTILESIZE-(theTILESIZE/10)+y);
+            glVertex2f((theTILESIZE/10+x), (theTILESIZE/5)+y);
             
-            glVertex2f(theTILESIZE-(theTILESIZE/10), (theTILESIZE/5));
-            glVertex2f((theTILESIZE/5), theTILESIZE-(theTILESIZE/10));
-            glVertex2f((theTILESIZE/10), theTILESIZE-(theTILESIZE/5));
-            glVertex2f(theTILESIZE-(theTILESIZE/5), (theTILESIZE/10));
+            glVertex2f(theTILESIZE-(theTILESIZE/10)+x, (theTILESIZE/5)+y);
+            glVertex2f((theTILESIZE/5)+x, theTILESIZE-(theTILESIZE/10)+y);
+            glVertex2f((theTILESIZE/10)+x, theTILESIZE-(theTILESIZE/5)+y);
+            glVertex2f(theTILESIZE-(theTILESIZE/5)+x, (theTILESIZE/10)+y);
             //find and replace ftw
+            if (writing.size() != 0){
+                glColor4f(0,0, 0.4, 1);
+                glVertex2f(0+x, 0+y);
+                glVertex2f((theTILESIZE/10.0)*(writing.size()*4)+(theTILESIZE/10.0)+x, 0+y);
+                glVertex2f((theTILESIZE/10.0)*(writing.size()*4)+(theTILESIZE/10.0)+x, (theTILESIZE/10.0)*7+y);
+                glVertex2f(0+x, (theTILESIZE/10.0)*7+y);
+            
+            }
         }
     glEnd();
-    if (func != 0){
+    if (writing.size() != 0){
         Text(writing, theTILESIZE/10.0+x, theTILESIZE/10.0+y, theTILESIZE/10.0);
     }
 }
@@ -271,68 +279,98 @@ void drawSomething(int theTILESIZE, GLfloat colour[], int x, int y){
         
     glEnd();
 }*/
-
 void drawBlockGlow(int theTILESIZE, float r, float g, float b){
+    drawBlockGlow(theTILESIZE, r, g, b, 0,0);
+}
+void drawBlockGlow(int theTILESIZE, float r, float g, float b, int x, int y){
     float amnt = theTILESIZE/3;
     float TILESIZE = theTILESIZE-1.1;
     glBegin(GL_QUADS);
         
         //glMaterialfv(GL_FRONT, GL_DIFFUSE, inwhite);
         glColor4f(r, g, b, 0);
-        glVertex2f(0, 0-amnt);// top
-        glVertex2f(TILESIZE, 0-amnt);
+        glVertex2f(0+x, 0-amnt+y);// top
+        glVertex2f(TILESIZE+x, 0-amnt+y);
         //glMaterialfv(GL_FRONT, GL_DIFFUSE, white);
         glColor4f(r, g, b, 1);
-        glVertex2f(TILESIZE, 0);
-        glVertex2f(0, 0);
+        glVertex2f(TILESIZE+x, 0+y);
+        glVertex2f(0+x, 0+y);
         
         glColor4f(r, g, b, 1);
-        glVertex2f(TILESIZE, 0);//right
+        glVertex2f(TILESIZE+x, 0+y);//right
         glColor4f(r, g, b, 0);
-        glVertex2f(TILESIZE+amnt, 0);
-        glVertex2f(TILESIZE+amnt, TILESIZE);
+        glVertex2f(TILESIZE+amnt+x, 0+y);
+        glVertex2f(TILESIZE+amnt+x, TILESIZE+y);
         glColor4f(r, g, b, 1);
-        glVertex2f(TILESIZE, TILESIZE);
+        glVertex2f(TILESIZE+x, TILESIZE+y);
         
         
-        glVertex2f(0, TILESIZE);//bottom
-        glVertex2f(TILESIZE, TILESIZE);
+        glVertex2f(0+x, TILESIZE+y);//bottom
+        glVertex2f(TILESIZE+x, TILESIZE+y);
         glColor4f(r, g, b, 0);
-        glVertex2f(TILESIZE, TILESIZE+amnt);
-        glVertex2f(0, TILESIZE+amnt);
+        glVertex2f(TILESIZE+x, TILESIZE+amnt+y);
+        glVertex2f(0+x, TILESIZE+amnt+y);
         
         glColor4f(r, g, b, 0);
-        glVertex2f(0-amnt, 0);//left
+        glVertex2f(0-amnt+x, 0+y);//left
         glColor4f(r, g, b, 1);
-        glVertex2f(0, 0);
-        glVertex2f(0, TILESIZE);
+        glVertex2f(0+x, 0+y);
+        glVertex2f(0+x, TILESIZE+y);
         glColor4f(r, g, b, 0);
-        glVertex2f(0-amnt, TILESIZE);
+        glVertex2f(0-amnt+x, TILESIZE+y);
     glEnd();
     
     glBegin(GL_TRIANGLES);
         glColor4f(r, g, b, 0);
-        glVertex2f(0, 0-amnt);//tl
-        glVertex2f(0-amnt, 0);
+        glVertex2f(0+x, 0-amnt+y);//tl
+        glVertex2f(0-amnt+x, 0+y);
         glColor4f(r, g, b, 1);
-        glVertex2f(0, 0);
+        glVertex2f(0+x, 0+y);
         
         glColor4f(r, g, b, 0);
-        glVertex2f(TILESIZE, 0-amnt);//tr
-        glVertex2f(TILESIZE+amnt, 0);
+        glVertex2f(TILESIZE+x, 0-amnt+y);//tr
+        glVertex2f(TILESIZE+amnt+x, 0+y);
         glColor4f(r, g, b, 1);
-        glVertex2f(TILESIZE, 0);
+        glVertex2f(TILESIZE+x, 0+y);
         
-        glVertex2f(TILESIZE, TILESIZE);//br
+        glVertex2f(TILESIZE+x, TILESIZE+y);//br
         glColor4f(r, g, b, 0);
-        glVertex2f(TILESIZE+amnt, TILESIZE);
-        glVertex2f(TILESIZE, TILESIZE+amnt);
+        glVertex2f(TILESIZE+amnt+x, TILESIZE+y);
+        glVertex2f(TILESIZE+x, TILESIZE+amnt+y);
         
-        glVertex2f(0-amnt, TILESIZE);
-        glVertex2f(0, TILESIZE+amnt);
+        glVertex2f(0-amnt+x, TILESIZE+y);
+        glVertex2f(0+x, TILESIZE+amnt+y);
         glColor4f(r, g, b, 1);
-        glVertex2f(0, TILESIZE);//bl
+        glVertex2f(0+x, TILESIZE+y);//bl
     glEnd();
     //let's see what this does
+        
+}
+void drawBlockGhost(int theTILESIZE){
+    drawBlockGhost(theTILESIZE, 0,0);
+}
+void drawBlockGhost(int theTILESIZE, int x, int y){
+float tenth = theTILESIZE/10.0;
+    glBegin(GL_QUADS);
+      glColor4f(0.4, 0.4, 0.4, 1);
+        glVertex2f(0+x, 0+y);//t
+        glVertex2f(theTILESIZE+x, 0+y);
+        glVertex2f(theTILESIZE+x, tenth+y);
+        glVertex2f(0+x, tenth+y);
+        
+        glVertex2f(0+x, theTILESIZE-tenth+y);//b
+        glVertex2f(theTILESIZE+x, theTILESIZE-tenth+y);
+        glVertex2f(theTILESIZE+x, theTILESIZE+y);
+        glVertex2f(0+x, theTILESIZE+y);
+        
+        glVertex2f(0+x, tenth+y);//l
+        glVertex2f(tenth+x, tenth+y);
+        glVertex2f(tenth+x, theTILESIZE-tenth+y);
+        glVertex2f(0+x, theTILESIZE-tenth+y);
+        
+        glVertex2f(theTILESIZE-tenth+x, tenth+y);//r
+        glVertex2f(theTILESIZE+x, tenth+y);
+        glVertex2f(theTILESIZE+x, theTILESIZE-tenth+y);
+        glVertex2f(theTILESIZE-tenth+x, theTILESIZE-tenth+y);
         
 }

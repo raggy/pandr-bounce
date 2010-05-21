@@ -728,6 +728,13 @@ void Text(string msg, int x, int y, float size = 1.0, double r=1, double g=1, do
             glVertex2f(0, 5);
         }
         
+        if (msg.at(letter) == '\''){ // '
+            glVertex2f(0, 0);
+            glVertex2f(1, 0);
+            glVertex2f(1, 2);
+            glVertex2f(0, 2);
+        }
+        
         if (msg.at(letter) == '-'){
             glVertex2f(0, 2);
             glVertex2f(3, 2);
@@ -735,10 +742,39 @@ void Text(string msg, int x, int y, float size = 1.0, double r=1, double g=1, do
             glVertex2f(0, 3);
         }
         
+        if (msg.at(letter) == '*'){
+            glVertex2f(1, 0);//t
+            glVertex2f(2, 0);
+            glVertex2f(2, 1);
+            glVertex2f(1, 1);
+            glVertex2f(1, 2);//b
+            glVertex2f(2, 2);
+            glVertex2f(2, 3);
+            glVertex2f(1, 3);
+            glVertex2f(0, 1);//l
+            glVertex2f(1, 1);
+            glVertex2f(1, 2);
+            glVertex2f(0, 2);
+            glVertex2f(2, 1);//r
+            glVertex2f(3, 1);
+            glVertex2f(3, 2);
+            glVertex2f(2, 2);
+            
+        }if (msg.at(letter) == ':'){ // fullstop!
+            glVertex2f(0, 4);
+            glVertex2f(1, 4);
+            glVertex2f(1, 5);
+            glVertex2f(0, 5);
+            glVertex2f(0, 2);
+            glVertex2f(1, 2);
+            glVertex2f(1, 3);
+            glVertex2f(0, 3);
+        }
+        
         
         glEnd();
         
-        if (msg.at(letter) == '.'){
+        if (msg.at(letter) == '.' || msg.at(letter)== '\''){
             glTranslated(2, 0, 0);
         } else {
             glTranslated(4,0,0);
