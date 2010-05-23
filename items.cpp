@@ -83,7 +83,7 @@ int ballTexture(){
 
 void drawBall(double x, double y, int TILESIZE, string textnote){
     glPushMatrix();
-        glTranslated(x*TILESIZE-(TILESIZE/2), y*TILESIZE-(TILESIZE/2), 0);
+        //glTranslated(x*TILESIZE-(TILESIZE/2), y*TILESIZE-(TILESIZE/2), 0);
         GLfloat colour[] = {1, 1, 0, 1.0f};
         //glMaterialfv(GL_FRONT, GL_DIFFUSE, temp);
         
@@ -110,16 +110,16 @@ void drawBall(double x, double y, int TILESIZE, string textnote){
         glBegin(GL_TRIANGLE_FAN);
             
             glColor4f(colour[0], colour[1], colour[2], colour[3]);
-            glVertex2f(0, 0);
+            glVertex2f(x*TILESIZE-(TILESIZE/2), y*TILESIZE-(TILESIZE/2));
             int radius = TILESIZE/2;
             for (int angle = 0; angle <= 360; angle +=1){
-                glVertex2f(0 + sin(angle) * radius, 0 + cos(angle) * radius);
+                glVertex2f((x*TILESIZE-(TILESIZE/2)) + sin(angle) * radius, (y*TILESIZE-(TILESIZE/2)) + cos(angle) * radius);
             }
         glEnd();
         
         //triangle fan isn't smooth, so back to quad with round ball textures I think.
         
-        Text(textnote, -4*TILESIZE/10.0, -3*TILESIZE/10.0, TILESIZE/10.0, 0,0,0);
+        Text(textnote, (x-4)*TILESIZE/10.0, (y-3)*TILESIZE/10.0, TILESIZE/10.0, 0,0,0);
 
 
     glPopMatrix();
@@ -372,5 +372,5 @@ float tenth = theTILESIZE/10.0;
         glVertex2f(theTILESIZE+x, tenth+y);
         glVertex2f(theTILESIZE+x, theTILESIZE-tenth+y);
         glVertex2f(theTILESIZE-tenth+x, theTILESIZE-tenth+y);
-        
+    glEnd();
 }
