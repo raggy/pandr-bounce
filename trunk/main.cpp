@@ -914,6 +914,8 @@ class Tile {
                             cout << "Vectors: "<<newxv<<" and "<<newyv<<"\n";*/
                             ball->setPos(ballpos[0], ballpos[1],   newxv, newyv );
                             
+                            //
+                            
                             checkDestroy();
                             //angle = pbang;
                         }

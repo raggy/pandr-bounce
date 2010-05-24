@@ -119,7 +119,7 @@ void drawBall(double x, double y, int TILESIZE, string textnote){
         
         //triangle fan isn't smooth, so back to quad with round ball textures I think.
         
-        Text(textnote, (x-4)*TILESIZE/10.0, (y-3)*TILESIZE/10.0, TILESIZE/10.0, 0,0,0);
+        Text(textnote, ((x-1)*TILESIZE)+TILESIZE/6, ((y-1)*TILESIZE)+TILESIZE/4, TILESIZE/10.0, 0,0,0);
 
 
     glPopMatrix();
