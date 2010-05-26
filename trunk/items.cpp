@@ -222,7 +222,7 @@ void drawBlock(int theTILESIZE, GLfloat colour[], int func, int x, int y, string
         //glColor4f(0,1,0,1);
         glVertex2f(0+x, theTILESIZE-1+y);
         
-        if (func == 2){
+        if (func == 2){ // X
             glColor4f(1,1,1,1);
             glVertex2f((theTILESIZE/5)+x, (theTILESIZE/10)+y);
             glVertex2f(theTILESIZE-(theTILESIZE/10)+x, theTILESIZE-(theTILESIZE/5)+y);
@@ -244,6 +244,17 @@ void drawBlock(int theTILESIZE, GLfloat colour[], int func, int x, int y, string
             }
         }
     glEnd();
+    if (func == 1){ // v
+        glBegin(GL_TRIANGLES);
+            glColor4f(1,1,1,1);
+            glVertex2f((theTILESIZE/10)*5+x, (theTILESIZE/10)*9+y);
+            glVertex2f((theTILESIZE/10)*9+x, (theTILESIZE/10)*7+y);
+            glVertex2f((theTILESIZE/10)*1+x, (theTILESIZE/10)*7+y);
+
+            
+        
+        glEnd();
+    }
     if (writing.size() != 0){
         Text(writing, theTILESIZE/10.0+x, theTILESIZE/10.0+y, theTILESIZE/10.0);
     }

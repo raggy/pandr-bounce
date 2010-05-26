@@ -34,7 +34,7 @@ using namespace std;
 int fps = 0;
 int fullscreen = 0;
 
-int TILESIZE = 10;
+int TILESIZE = 20;
 
 int WIDTH = 80;
 int HEIGHT = 60;
@@ -916,7 +916,7 @@ class Tile {
                             
                             //
                             
-                            checkDestroy();
+                            //checkDestroy();
                             //angle = pbang;
                         }
                     }
@@ -938,6 +938,10 @@ class Tile {
                             }
                             if (func == 2){
                                 ball->kill();
+                            }
+                            
+                            if (ghost && func == 0){
+                                ball->hit();
                             }
                             
                             if (!ghost){
@@ -1370,13 +1374,14 @@ void Mouse(int button, int state, int x, int y){
             switch (state){
                 case 1:
                     if (!invent.active){
-                        
-                        if (((x+cameraxmod)>= 0 && (x+cameraxmod) < W_WIDTH) && ((y+cameraymod)>= 0 && (y+cameraymod) < W_HEIGHT)){
-                            themap.change((x+cameraxmod)/TILESIZE,(y+cameraymod)/TILESIZE, invent.nextdown.type, invent.nextdown.func, invent.nextdown.extra, invent.nextdown.hitstodestroy);
-                            if (invent.nextdown.type == 1){
-                                particles.add("poof", (x+cameraxmod)/TILESIZE, (y+cameraymod)/TILESIZE, 0, 0, 0.0, 1.0, 0.0);
-                            } else if (invent.nextdown.type == 2){
-                                particles.add("poof", (x+cameraxmod)/TILESIZE, (y+cameraymod)/TILESIZE, 0, 0, 1.0, 0.0, 0.0);
+                        if ( !(y > W_HEIGHT-60 && x < 120) ){ 
+                            if (((x+cameraxmod)>= 0 && (x+cameraxmod) < W_WIDTH) && ((y+cameraymod)>= 0 && (y+cameraymod) < W_HEIGHT)){
+                                themap.change((x+cameraxmod)/TILESIZE,(y+cameraymod)/TILESIZE, invent.nextdown.type, invent.nextdown.func, invent.nextdown.extra, invent.nextdown.hitstodestroy);
+                                if (invent.nextdown.type == 1){
+                                    particles.add("poof", (x+cameraxmod)/TILESIZE, (y+cameraymod)/TILESIZE, 0, 0, 0.0, 1.0, 0.0);
+                                } else if (invent.nextdown.type == 2){
+                                    particles.add("poof", (x+cameraxmod)/TILESIZE, (y+cameraymod)/TILESIZE, 0, 0, 1.0, 0.0, 0.0);
+                                }
                             }
                         }
                     } else {

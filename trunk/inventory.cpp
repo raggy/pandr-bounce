@@ -77,6 +77,7 @@ Inventory::Inventory(int glocation){
     things[3].push_back(19);//hitstodie down 19
     things[3].push_back(21);//hitsdie display 21
     things[3].push_back(20);//hitstodie up 20
+    things[3].push_back(23);//collides checkbox 23
     //things[3].push_back(22);//static block lul 22
     
     things.push_back(thing);//modifier block menu
@@ -188,6 +189,8 @@ void Inventory::particlesdraw(int &elapsed_time, int &TILESIZE, float &gravity){
 void Inventory::draw(int &W_WIDTH, int &W_HEIGHT, int xmod, int ymod, int stuff){
             // draw the G and the buttons.
     
+    
+    //the next display
     if ((oldnextdown.type != nextdown.type) || (oldnextdown.func != nextdown.func)
     || (oldnextdown.extra != nextdown.extra) || (oldnextdown.hitstodestroy != nextdown.hitstodestroy)){
         oldnextdown = nextdown;
@@ -196,7 +199,6 @@ void Inventory::draw(int &W_WIDTH, int &W_HEIGHT, int xmod, int ymod, int stuff)
         } else {
             theparts.add("burst", 20/10+xmod, (W_HEIGHT-20)/10+ymod, 0, 0, 1.0, 0.6, 0.6);
         }
-        cout << "farts\n";
     }
     
     glPushMatrix();
@@ -248,17 +250,33 @@ void Inventory::draw(int &W_WIDTH, int &W_HEIGHT, int xmod, int ymod, int stuff)
             Text("Block", 40+xmod, W_HEIGHT-58+ymod, 2, blockcolour);
         } else if (nextdown.func == 3){
             Text("Changer", 40+xmod, W_HEIGHT-58+ymod, 2, blockcolour);
+            Text("Instrument:", 45+xmod, W_HEIGHT-40+ymod, 1, white);
+            Text(instrument[theinstrument], 45+xmod, W_HEIGHT-32+ymod, 1, white);
+            
         } else if (nextdown.func == 1){
             Text("Creator", 40+xmod, W_HEIGHT-58+ymod, 2, blockcolour);
+            
+            Text("Instrument:", 45+xmod, W_HEIGHT-40+ymod, 1, white);
+            Text(instrument[theinstrument], 45+xmod, W_HEIGHT-32+ymod, 1, white);
+            
+            Text("Interval:", 45+xmod, W_HEIGHT-22+ymod, 1, white);
+            Text(ftostring(ballevery)+" seconds", 45+xmod, W_HEIGHT-14+ymod, 1, white);
+            
         } else if (nextdown.func == 2){
-            Text("Detroyer", 40+xmod, W_HEIGHT-58+ymod, 2, blockcolour);
+            Text("Detroyer", 45+xmod, W_HEIGHT-58+ymod, 2, blockcolour);
         }
             
             
     
     }
     
-        
+    
+    
+    
+    
+    
+    
+    //the inventory itself
     
     glPushMatrix();
     if (active == false){
@@ -409,14 +427,17 @@ void Inventory::buttondisplay(int &num, int xoff, int yoff){
             glVertex2f(xoff+80,yoff+80);
             glVertex2f(xoff-0,yoff+80);
         glEnd();
-        drawBlock(60, blockcolour, 0, xoff+10, yoff+10);
         if (num == 15){
+            drawBlock(60, blockcolour, 0, xoff+10, yoff+10);
             Text("Normal", xoff+16, yoff, TextHeight(10));
         } else if (num == 16){
+            drawBlock(60, blockcolour, 3, xoff+10, yoff+10);   
             Text("Changer", xoff+12, yoff, TextHeight(10));
         } else if (num == 17){
+            drawBlock(60, blockcolour, 1, xoff+10, yoff+10);
             Text("Creator", xoff+12, yoff, TextHeight(10));
         } else if (num == 18){
+            drawBlock(60, blockcolour, 2, xoff+10, yoff+10);    
             Text("Destroyer", xoff+4, yoff, TextHeight(10));
         }/* else if (num == 22 || num == 33 || num == 37 || num == 38){
             Text("Finalise", xoff+8, yoff, TextHeight(10));
@@ -894,7 +915,7 @@ void Inventory::buttonfunction(int &num){
         else if (note=="F") {note="E";}
         else if (note=="G") {note="F";}
         else if (note=="A") {note="G";}
-        else if (note=="B") {note="C";}
+        else if (note=="B") {note="A";}
             nextdown.extra+="note:"+note+itostring(octave)+";";
     } else if (num == 28){
         if (octave < 9) octave++;
