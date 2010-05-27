@@ -912,6 +912,11 @@ class Tile {
                             /*cout << cos(rad(60)) << ", "<<cos(60*PI/180) << "\n";
                             cout << "Ball's angle: "<<ang<<", line's angle: "<<rad(lineangle)<<", difference: "<<(ang-rad(lineangle))<<", ball's new angle: "<<pbang<<"\n";
                             cout << "Vectors: "<<newxv<<" and "<<newyv<<"\n";*/
+                            
+                            if (angle == 0 || angle == 90){
+                                newxv = -newxv;
+                            }
+                            
                             ball->setPos(ballpos[0], ballpos[1],   newxv, newyv );
                             
                             //
@@ -983,8 +988,8 @@ class Tile {
             }
             string text = "";
             
-            glPushMatrix();
-                glTranslated(x*TILESIZE, y*TILESIZE, 0);
+            //glPushMatrix();
+                //glTranslated((x*TILESIZE), y*TILESIZE, 0);
                 //glColor4f(1,1,1, 1);
                 GLfloat temp[] = {r, g, b, 1};
 
@@ -994,7 +999,7 @@ class Tile {
                 switch (type) {
                     case 1:
                         //line
-                        drawLine(TILESIZE, temp, coords[0], coords[1], coords[2], coords[3]);
+                        drawLine(TILESIZE, temp, coords[0]+(x), coords[1]+(y), coords[2]+(x), coords[3]+(y));
                         //if (hitstodestroy != 0){
                             //drawLineGlow(TILESIZE, 1,1,1, coords[0], coords[1], coords[2], coords[3]);
                         //}
@@ -1002,7 +1007,7 @@ class Tile {
                     case 2:
                         //block
                         if (hitstodestroy != 0){
-                            drawBlockGlow(TILESIZE, glow[0], glow[1], glow[2]);
+                            drawBlockGlow(TILESIZE, glow[0], glow[1], glow[2], (x*TILESIZE), (y*TILESIZE));
                         }
                         if (hitstodestroy != 0 && (func == 0 || func == 2)){
                             text = itostring(hitstodestroy);
@@ -1010,16 +1015,16 @@ class Tile {
                         if (func == 1 || func == 3){
                             text = bnote;
                         }
-                        drawBlock(TILESIZE, temp, func, text);
+                        drawBlock(TILESIZE, temp, func, (x*TILESIZE), (y*TILESIZE), text);
                         if (ghost){
-                            drawBlockGhost(TILESIZE);
+                            drawBlockGhost(TILESIZE, (x*TILESIZE), (y*TILESIZE));
                         }
                         break;
                     default:
-                        drawSomething(TILESIZE, drk);
+                        drawSomething(TILESIZE, drk, (x*TILESIZE), (y*TILESIZE));
                         break;
                 }
-            glPopMatrix();
+            //glPopMatrix();
             return 0;
         }
 };
@@ -1212,7 +1217,7 @@ void draw() {
     //glEnable(GL_LIGHTING);
 
     // Push the current matrix stack
-    glPushMatrix();
+    //glPushMatrix();
 
 
     
@@ -1393,7 +1398,7 @@ void Mouse(int button, int state, int x, int y){
         case 2:
             switch (state){
                 case 1:
-                    if (((x+cameraxmod)>= 0 && (x+cameraxmod) < W_WIDTH) && ((y+cameraymod)>= 0 && (y+cameraymod) < W_HEIGHT)){
+                    if (((x+cameraxmod)>= 0 && (x+cameraxmod) < W_WIDTH+cameraxmod) && ((y+cameraymod)>= 0 && (y+cameraymod) < W_HEIGHT+cameraymod)){
                     
                         if (themap.returnAt((x+cameraxmod)/TILESIZE,(y+cameraymod)/TILESIZE).type == 1){
                             particles.add("disintegrate", (x+cameraxmod)/TILESIZE, (y+cameraymod)/TILESIZE, 0, 0, 0.0, 1.0, 0.0);

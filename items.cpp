@@ -82,8 +82,8 @@ int ballTexture(){
 
 
 void drawBall(double x, double y, int TILESIZE, string textnote){
-    glPushMatrix();
-        //glTranslated(x*TILESIZE-(TILESIZE/2), y*TILESIZE-(TILESIZE/2), 0);
+    //glPushMatrix();
+    //    //glTranslated(x*TILESIZE-(TILESIZE/2), y*TILESIZE-(TILESIZE/2), 0);
         GLfloat colour[] = {1, 1, 0, 1.0f};
         //glMaterialfv(GL_FRONT, GL_DIFFUSE, temp);
         
@@ -122,7 +122,7 @@ void drawBall(double x, double y, int TILESIZE, string textnote){
         Text(textnote, ((x-1)*TILESIZE)+TILESIZE/6, ((y-1)*TILESIZE)+TILESIZE/4, TILESIZE/10.0, 0,0,0);
 
 
-    glPopMatrix();
+    //glPopMatrix();
 }
 
 
