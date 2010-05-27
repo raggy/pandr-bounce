@@ -42,7 +42,7 @@ Inventory::Inventory(int glocation){
     instrument[9] = "Glockenspiel";
     instrument[13] = "Xylophone";
     instrument[1] = "Piano";
-    theinstrument = 9;
+    theinstrument = 13;
     ballevery = 2.0;
     
     

@@ -1039,6 +1039,7 @@ class Map {
     
         int width, height; // set in constructor.
         int uid;
+        int putdown;
         
         vector < vector<Tile> > tiles;
         
@@ -1058,17 +1059,122 @@ class Map {
             
                 tiles.push_back(dummy);
                 for (int j = 0; j < height; j++) {
-                    /*if (i == 0 && (j == 0 || j == 1)){
-                        tiles[i].push_back(Tile(uid, i, j, 2, 3, "note:E4;instrument:13;collides:0;", 0, false)); //static block
-                    }*/
-                    if (i == 10 && j == 20){
+                    putdown = 0;
+                    
+
+                    //the underline
+                    if (j == 21 && i >= 3 && i <= 33){
                         tiles[i].push_back(Tile(uid, i, j, 1, 0, "", 0, false)); //static line
-                    } else if (i == 4 && j == 20){
-                        tiles[i].push_back(Tile(uid, i, j, 2, 0, "", 20, false)); //static block
-                    } else if (i == 10 && j == 25){
-                        tiles[i].push_back(Tile(uid, i, j, 2, 3, "note:E4;instrument:13;", 0, true));// changer block
+                        putdown = 1;
+                        
+                    }
+                    
+                    // the creator
+                    if (i == 4 && j == 6){
+                        tiles[i].push_back(Tile(uid, i, j, 2, 1, "note:C4;instrument:13;createpattern:1;patterncycle:1.0;", 0, true));
+                        putdown = 1;
+                    }
+                    
+                    // that angle
+                    if (i == 4 && j == 10){
+                        tiles[i].push_back(Tile(uid, i, j, 1, 0, "15", 0, false));
+                        putdown = 1;
+                    }
+                    
+                    //the B
+                    if ( (i== 4 && j >= 11 && j <=17) ||
+                    ((i == 5 || i == 6) && (j == 11 || j == 14 || j == 17)) ||
+                    (i == 7 && (j == 12 || j == 13 || j == 15 || j == 16)) ){
+                        tiles[i].push_back(Tile(uid, i, j, 2, 0, "", 2, false));
+                        putdown = 1;
+                    }
+                    
+                    //the O
+                    if (
+                    (i == 9 && j == 13) ||
+                    ((i == 10 || i == 11) && j == 12) ||
+                    ((i == 10 || i == 11) && j == 17) ||
+                    (i == 12 && j == 16)){
+                        tiles[i].push_back(Tile(uid, i, j, 1, 0, "0", 0, false));
+                        putdown = 1;
+                    }
+                    if (
+                    (i == 9 && j >= 14 && j <= 16) ||
+                    (i == 12 && j >= 13 && j <= 15)){
+                        tiles[i].push_back(Tile(uid, i, j, 1, 0, "90", 0, false));
+                        putdown = 1;
+                    }
+                        
+                    //the U
+                    if (
+                    ((i == 14 || i == 17) && j >= 13 && j <=16) ||
+                    ((i == 15 || i == 16) && j == 17)){
+                        tiles[i].push_back(Tile(uid, i, j, 2, 3, "note:E5;collides:0;", 0, true));// changer block
+                    }
+                    
+                    //the N
+                    if (
+                    ((i == 18 || i == 19) && j == 13) ||
+                    (i == 23 && j == 18)){
+                        tiles[i].push_back(Tile(uid, i, j, 1, 0, "15", 0, false));
+                        putdown = 1;
+                    }
+                    if (i == 18 && j == 18){
+                        tiles[i].push_back(Tile(uid, i, j, 1, 0, "165", 0, false));
+                        putdown = 1;
+                    }
+                    if (((i == 19 || i == 23) && j >= 15 && j <= 17) || (i == 19 && j == 14)){
+                        tiles[i].push_back(Tile(uid, i, j, 1, 0, "90", 0, false));
+                        putdown = 1;
+                    }
+                    if ((i ==23 && j == 14) || (i==24 && j == 13)){
+                        tiles[i].push_back(Tile(uid, i, j, 1, 0, "0", 0, false));
+                        putdown = 1;
+                    }
+                    if (i == 20 && j == 14){
+                        tiles[i].push_back(Tile(uid, i, j, 1, 0, "30", 0, false));
+                        putdown = 1;
+                    }
+                    if (i == 21 && j == 15){
+                        tiles[i].push_back(Tile(uid, i, j, 1, 0, "45", 0, false));
+                        putdown = 1;
+                    }
+                    if (i == 22 && j == 16){
+                        tiles[i].push_back(Tile(uid, i, j, 1, 0, "60", 0, false));
+                        putdown = 1;
+                    }
+                    
+                    //the C
+                    if (
+                    ((i == 26 || i == 27) && (j == 13 || j == 17))||
+                    (i == 25 && j >= 14 && j <= 16)){
+                        tiles[i].push_back(Tile(uid, i, j, 2, 3, "note:G5;collides:0;", 0, true));// changer block
+                    }
+                    
+                    //the E
+                    if (i >=29 && i <= 31 && (j == 13 || j == 15 || j == 17)){
+                        tiles[i].push_back(Tile(uid, i, j, 1, 0, "0", 0, false));
+                        putdown = 1;
+                    }
+                    if (i == 29 && (j == 14 || j == 16)){
+                        tiles[i].push_back(Tile(uid, i, j, 1, 0, "90", 0, false));
+                        putdown = 1;
+                    }
+                    
+                    //the line of destroyers
+                    if (i == 34 && j >= 8 && j <= 20){
+                        tiles[i].push_back(Tile(uid, i, j, 2, 2, "", 0, false));
+                        putdown = 1;
+                    }
+                    
+                    
+
+                    
+                        //tiles[i].push_back(Tile(uid, i, j, 2, 0, "", 20, false)); //static block
+                    
+                        //tiles[i].push_back(Tile(uid, i, j, 2, 3, "note:E4;instrument:13;", 0, true));// changer block
             
-                    } else {
+                    if (putdown == 0){
                         tiles[i].push_back(Tile(uid, i, j, 0, 0, "", 0, true));// bg/ghost
                     }
                     uid ++;
@@ -1654,12 +1760,12 @@ int main (int argc, char * argv[]) {
     
     itemsInit();
 
-    storage.add( Ball(4, 10) );
+    /*storage.add( Ball(4, 10) );
     storage.add( Ball(5, 10) );
     storage.add( Ball(6, 10) );
     storage.add( Ball(10, 15) );
     storage.add( Ball(11, 15) );
-    storage.add( Ball(12, 15) );
+    storage.add( Ball(12, 15) );*/
     
     gameplz = 1;
     
