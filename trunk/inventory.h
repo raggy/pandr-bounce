@@ -68,6 +68,7 @@ class Inventory {
         map <int, string> instrument;
         int theinstrument;
         float ballevery;
+        int switches;
         
         
         Inventory(int glocation);

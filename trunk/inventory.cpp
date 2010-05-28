@@ -44,6 +44,7 @@ Inventory::Inventory(int glocation){
     instrument[1] = "Piano";
     theinstrument = 13;
     ballevery = 2.0;
+    switches = 0;
     
     
     black[0]=0; black[1]=0; black[2]=0; black[3]=1;
@@ -79,6 +80,7 @@ Inventory::Inventory(int glocation){
     things[3].push_back(20);//hitstodie up 20
     things[3].push_back(23);//collides checkbox 23
     //things[3].push_back(22);//static block lul 22
+    things[3].push_back(37);
     
     things.push_back(thing);//modifier block menu
     things[4].push_back(2);//back
@@ -232,6 +234,9 @@ void Inventory::draw(int &W_WIDTH, int &W_HEIGHT, int xmod, int ymod, int stuff)
             drawBlock(30, blockcolour, nextdown.func, 5+xmod, W_HEIGHT-35+ymod, note+itostring(octave));
         } else {
             drawBlock(30, blockcolour, nextdown.func, 5+xmod, W_HEIGHT-35+ymod);
+            if (switches){
+                drawExclam(30, 5+xmod, W_HEIGHT-35+ymod);
+            }
         }
         
         if (!collides){
@@ -623,7 +628,49 @@ void Inventory::buttondisplay(int &num, int xoff, int yoff){
         }
         
 
+    } else if (num == 37){//switcher checkbox
+        if (switches){
+            Text("Collision switches on hit", xoff-30, yoff-10);
+        } else {
+            Text("Normal collision", xoff-10, yoff-10);
+        }
+        glBegin(GL_QUADS);
+        glColor4f(black[0], black[1], black[2], black[3]);
+            glVertex2f(xoff+0,yoff+0);
+            glVertex2f(xoff+40,yoff+0);
+            glVertex2f(xoff+40,yoff+40);
+            glVertex2f(xoff+0,yoff+40);
+            
+        if (switches){
+            glColor4f(alightblue[0], alightblue[1], alightblue[2], alightblue[3]);
+            glVertex2f(xoff+40,yoff);
+            glVertex2f(xoff+40,yoff+10);
+            glVertex2f(xoff+15,yoff+40);
+            glVertex2f(xoff+15,yoff+30);
+            
+            glVertex2f(xoff,yoff+20);
+            glVertex2f(xoff+15,yoff+30);
+            glVertex2f(xoff+15,yoff+40);
+            glVertex2f(xoff,yoff+28);
+            
+            
+        } else {
+            glColor4f(1,1,1,1);
+            glVertex2f(xoff+8,yoff+2);
+            glVertex2f(xoff+40-2,yoff+40-8);
+            glVertex2f(xoff+40-8,yoff+40-2);
+            glVertex2f(xoff+2,yoff+8);
+            
+            glVertex2f(xoff+40-2,yoff+8);
+            glVertex2f(xoff+8,yoff+40-2);
+            glVertex2f(xoff+2,yoff+40-8);
+            glVertex2f(xoff+40-8,yoff+2);
+        }
+        
+        glEnd();
+        
     }
+
 }
 
 int Inventory::buttonarea(int &num, int part, int &W_WIDTH, int &W_HEIGHT, int xmod=0, int ymod=0){
@@ -755,6 +802,11 @@ int Inventory::buttonarea(int &num, int part, int &W_WIDTH, int &W_HEIGHT, int x
         arraytoreturn[1] = adjusty;
         arraytoreturn[2] = adjustx+60;
         arraytoreturn[3] = adjusty+20;
+    } else if (num == 37){
+        arraytoreturn[0] = 60;
+        arraytoreturn[1] = 250;
+        arraytoreturn[2] = 60+40;
+        arraytoreturn[3] = 250+40;
     }/* else if (num == 33){
         arraytoreturn[0] = 40;
         arraytoreturn[1] = 400;
@@ -816,10 +868,11 @@ void Inventory::buttonfunction(int &num){
         }*/
         nextdown.type = 2;
         nextdown.hitstodestroy = hitstodie;
-        nextdown.extra = "";
+        nextdown.extra = "collides:"+itostring(collides)+";";
         switch (num){
             case 15:
                 nextdown.func=0;
+                nextdown.extra = "switches:"+itostring(switches)+";";
                 break;
             case 16:
                 nextdown.func=3;
@@ -832,7 +885,6 @@ void Inventory::buttonfunction(int &num){
                 nextdown.func=2;
                 break;
         }
-        if (num != 15){ nextdown.extra += "collides:"+itostring(collides)+";";}
         
         if (num == 16 || num == 17){
             nextdown.extra+="note:"+note+itostring(octave)+";";
@@ -874,7 +926,7 @@ void Inventory::buttonfunction(int &num){
         
     } else if (num == 23){
         collides = !collides;
-        if (num != 22){ nextdown.extra += "collides:"+itostring(collides)+";";}
+        nextdown.extra += "collides:"+itostring(collides)+";";
     
     
     } else if (num == 25){
@@ -920,10 +972,10 @@ void Inventory::buttonfunction(int &num){
         else if (note=="B") {note="A";}
             nextdown.extra+="note:"+note+itostring(octave)+";";
     } else if (num == 28){
-        if (octave < 9) octave++;
+        if (octave < 6) octave++;
         nextdown.extra+="note:"+note+itostring(octave)+";";
     } else if (num == 29){
-        if (octave >3) octave--;
+        if (octave >1) octave--;
         nextdown.extra+="note:"+note+itostring(octave)+";";
     } else if (num == 31){
         if (theinstrument==10) {theinstrument=13;}
@@ -946,5 +998,8 @@ void Inventory::buttonfunction(int &num){
             nextdown.extra+="createpattern:1;patterncycle:"+ftostring(ballevery)+";";
         }
         
+    } else if (num == 37){
+        switches = !switches;
+        nextdown.extra += "switches:"+itostring(switches)+";";
     }
 }
