@@ -983,9 +983,9 @@ class Tile {
             
             if (func == 1) checkTimer(elapsed_time);
             
-            if (type != 0 && type != 1 && !(type == 2 && func == 0 && hitstodestroy == 0)){
+            /*if (type != 0 && type != 1 && !(type == 2 && func == 0 && hitstodestroy == 0)){
                 stuff ++;
-            }
+            }*/
             string text = "";
             
             //glPushMatrix();
@@ -1196,6 +1196,17 @@ class Map {
         }
         void change (int x, int y, int type = 0, int func = 0, string extra = "0", int hits = 0){
             tiles[x][y] = Tile(tiles[x][y].uid, x, y, type, func, extra, hits);
+        }
+        
+        void clear(int w, int h){
+            vector<Tile> dummy;
+            for (int i = 0; i < width; i++) {
+            
+                tiles.push_back(dummy);
+                for (int j = 0; j < height; j++) {
+                    change(i, j, 0, 0, "", 0);// bg/ghost
+                }
+            }
         }
 };
 
@@ -1433,7 +1444,7 @@ void idler(void) {
     if (clock() > lastclock){
         glutPostRedisplay();
         //fps = clock()-lastclock;
-        lastclock = clock() + (CLOCKS_PER_SEC/60);
+        lastclock = clock() + (CLOCKS_PER_SEC/40);
         
         /*
         frame++;
@@ -1598,7 +1609,7 @@ void SpecialKeyboard(int key, int x, int y){
 
     switch(key) {
         case GLUT_KEY_LEFT:
-            if (cameraxmod >=TILESIZE+scrollamount){
+            if (cameraxmod >=scrollamount){
                 cameraxmod -=scrollamount;
             }
             break;
@@ -1606,7 +1617,7 @@ void SpecialKeyboard(int key, int x, int y){
             cameraxmod +=scrollamount;
             break;
         case GLUT_KEY_UP:
-            if (cameraymod >=TILESIZE+scrollamount){
+            if (cameraymod >=scrollamount){
                 cameraymod -=scrollamount;
             }
             break;
@@ -1733,7 +1744,9 @@ void Keyboard(unsigned char key, int A, int B) {
                 glutSpecialFunc(SpecialKeyboard);
             }
             break;
-
+        case 'c':
+            themap.clear(WIDTH, HEIGHT);
+            break;
         
         default:
             break;
