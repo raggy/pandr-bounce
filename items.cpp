@@ -385,3 +385,23 @@ float tenth = theTILESIZE/10.0;
         glVertex2f(theTILESIZE-tenth+x, theTILESIZE-tenth+y);
     glEnd();
 }
+void drawExclam(int theTILESIZE){
+    drawExclam(theTILESIZE, 0,0);
+}
+void drawExclam(int theTILESIZE, int x, int y){
+    float tenth = theTILESIZE/10.0;
+    glBegin(GL_QUADS);
+      glColor4f(1,1,1, 1);
+        glVertex2f(tenth*4+x, tenth+y);
+        glVertex2f(tenth*6+x, tenth+y);
+        glVertex2f(tenth*6+x, tenth*6+y);
+        glVertex2f(tenth*4+x, tenth*6+y);
+        
+        
+        glVertex2f(tenth*4+x, tenth*7+y);
+        glVertex2f(tenth*6+x, tenth*7+y);
+        glVertex2f(tenth*6+x, tenth*9+y);
+        glVertex2f(tenth*4+x, tenth*9+y);
+        
+    glEnd();
+}

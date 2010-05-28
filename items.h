@@ -58,4 +58,7 @@ void drawBlockGlow(int theTILESIZE, float r, float g, float b, int x, int y);
 void drawBlockGhost(int theTILESIZE);
 void drawBlockGhost(int theTILESIZE, int x, int y);
 
+void drawExclam(int theTILESIZE);
+void drawExclam(int theTILESIZE, int x, int y);
+
 #endif

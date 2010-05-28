@@ -287,7 +287,7 @@ class Ball {
             midiout->sendMessage( &message );
 
             message.clear(); //otherwise errors about sysex.
-            timer = 60;//remember 60fps.
+            timer = 40;//remember 60fps.
             hittimer = 5;
             justhit = true;
             
@@ -542,6 +542,8 @@ class Tile {
         int timer;
         string bnote;
         int binstrument;
+        int switches;
+        bool ghosthitlastframe;
         
         float glow[3];
         
@@ -592,6 +594,8 @@ class Tile {
             timer = 0;
             bnote = "";
             binstrument = -1;
+            switches = 0;
+            ghosthitlastframe = false;
             
             if (hitstodestroy != 0){
                 glow[0] = 0.0;
@@ -705,7 +709,10 @@ class Tile {
                         binstrument = atof(extrapart[1].c_str());
                         cout << "Instrument: " << binstrument << "\n";
                     }
-
+                    if (extrapart[0] == "switches" && func == 0){
+                        switches = ( atoi(extrapart[1].c_str()) );
+                        ghost = !ghost;
+                    }
 
                     extrapart.pop_back();
                     if (extrapart.size() != 0){
@@ -747,20 +754,25 @@ class Tile {
         
         
         bool gonnaCrash(int elapsed_time, float ballx, float bally, float ballxv, float ballyv){
+        //ballx -= 1;
             bool xtrue = false, ytrue = false;
             
-            if (ballx > x && ballx <= x+1){ //pos
+            if (ballxv>0 && type == 2 && func == 0){
+                ballx +=1;
+            }
+            
+            if (ballx >= x && ballx < x+1){ //pos
                 xtrue = true;
             }
-            if (bally > y && bally <= y+1){
+            if (bally >= y && bally < y+1){
                 ytrue = true;
             }
             
             
-            if(ballx+(ballxv*elapsed_time) > x && ballx+(ballxv*elapsed_time) < x+1){ //pos + vel = in
+            if(ballx+(ballxv*elapsed_time) >= x && ballx+(ballxv*elapsed_time) < x+1){ //pos + vel = in
                 xtrue = true;
             }
-            if(bally+(ballyv*elapsed_time) > y && bally+(ballyv*elapsed_time) < y+1){ //pos + vel = in
+            if(bally+(ballyv*elapsed_time) >= y && bally+(ballyv*elapsed_time) < y+1){ //pos + vel = in
                 ytrue = true;
             }
             
@@ -776,8 +788,12 @@ class Tile {
             }
             
             
+            /*if (type == 2 && func == 0 && (xtrue || ytrue)){
+                cout << "Block: "<< x << ", " << y << "; Ball: "<< ballx << ", " << bally <<"\n";
+            }*/
             
             if (xtrue && ytrue){
+            
                 return true;
             } else {
                 return false;
@@ -804,6 +820,7 @@ class Tile {
                 float newyv=0.0;
                 float lineangle=0.0;
                 float speed = 0.0;
+                bool hit = false;
                 
                 list<Ball>::iterator ball;
                 for (ball = ball_list.begin(); ball != ball_list.end(); ball++) {
@@ -924,13 +941,17 @@ class Tile {
                             //checkDestroy();
                             //angle = pbang;
                         }
+                        
+                                    hit = true;
                     }
                     
                     
                     if (type == 2){
-                        if (!(ball->justhit) && gonnaCrash(elapsed_time, ballpos[0], ballpos[1], ballpos[2], ballpos[3])){
+                        if (!(ball->justhit) && gonnaCrash(elapsed_time, ballpos[0]-1, ballpos[1], ballpos[2], ballpos[3])){
                             //cout << "thock (" << ball->getID() << ")\n"; 
                             
+                                    hit = true;
+                                    
                             if (func == 3){
                                 particles.add("schlup", x, y, 0, 0, 1.0, 0.0, 0.0);
                                 if (bnote != ""){
@@ -945,24 +966,74 @@ class Tile {
                                 ball->kill();
                             }
                             
-                            if (ghost && func == 0){
+                            if (switches && func == 0 && !ghosthitlastframe ){
+                                ghost = !ghost;
+                                cout << "switch!\n";
+                            }
+                            if (ghost && !ghosthitlastframe && func == 0 && switches == 0){
                                 ball->hit();
                             }
-                            
+                        
                             if (!ghost){
                                 ball->hit();
                                 hitGlow();
                                 //if (ballpos[3] >= ballpos[2]){//going faster in y than x
                                 //NOTE: can probably do this better somehow, what if it's flying sideways..?
-                                ball->setPos(ballpos[0], ballpos[1],   (ballpos[2]), -(ballpos[3]+gravity*elapsed_time) );
+                                
+                                
+                                //comes from left or right, reverse x
+                                //comes trom top or bottom, reverse y
+                                //ONYL reverse both if thy're the same?
+                                
+                          //       \ /
+//                                  *
+//                                 / \
+                                
+                                
+                                float xdiff, ydiff;
+                                if (ballpos[2] > 0){ //going right
+                                    xdiff  = x-ballpos[0];
+                                } else {
+                                    xdiff  = ballpos[0]-x-1;
+                                }
+                                if (ballpos[3] > 0){ //going down
+                                    ydiff  = y-ballpos[1];
+                                } else {
+                                    ydiff  = ballpos[0]-y-1;
+                                }
+                                float difference = (xdiff - ydiff);
+                                    
+                                float xv = ballpos[2];
+                                float yv = ballpos[3]+gravity*elapsed_time;
+                                
+                                /*if (difference >= -0.01 && difference <= 0.01){ //so if we're near-perfect 45º on a corner
+                                    xv = -xv;
+                                    yv = -yv;
+                                } else {*/
+                                    if (difference > 0 && xdiff > ydiff){// if x > y, we're sideways, from left anyways. //vel for that.
+                                        xv = -xv;
+                                    } else {
+                                        yv = -yv;
+                                    }
+                               // }
+                                
+                                ball->setPos(ballpos[0], ballpos[1],   xv, yv );
+                                
+                                //ball->setPos(ballpos[0], ballpos[1],   (ballpos[2]), -(ballpos[3]+gravity*elapsed_time) );
                                 /*} else {
                                     ball->setPos(ballpos[0], ballpos[1],   -(ballpos[2]+gravity), ballpos[3] );
                                 } */ 
+                            } else {
+                                ghosthitlastframe = true;
                             }
                             
                             
                             checkDestroy();
                         }
+                    }
+                    
+                    if (ghosthitlastframe && !hit){
+                        ghosthitlastframe = false;
                     }
                 }
                 
@@ -1016,8 +1087,11 @@ class Tile {
                             text = bnote;
                         }
                         drawBlock(TILESIZE, temp, func, (x*TILESIZE), (y*TILESIZE), text);
-                        if (ghost){
+                        if ((ghost && !switches) || (!ghost && switches)){
                             drawBlockGhost(TILESIZE, (x*TILESIZE), (y*TILESIZE));
+                        }
+                        if (switches && func == 0){
+                            drawExclam(TILESIZE,  (x*TILESIZE), (y*TILESIZE));
                         }
                         break;
                     default:
