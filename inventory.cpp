@@ -39,7 +39,7 @@ Inventory::Inventory(int glocation){
     collides = 1;
     note = "C";
     octave = 4;
-    instrument[9] = "Glockenspiel";
+    instrument[10] = "Steel Drums";
     instrument[13] = "Xylophone";
     instrument[1] = "Piano";
     theinstrument = 13;
@@ -320,9 +320,11 @@ void Inventory::draw(int &W_WIDTH, int &W_HEIGHT, int xmod, int ymod, int stuff)
 
         Text("Inventory", 4, 4, 3, 1,1,1);
         
-        if (stuff==0){
+        /*if (stuff==0){
             glTranslated(W_WIDTH-150+xmod, 0+ymod, 0);
-        }
+        }*/
+        
+        
         
         for (int i = 0; i < things[currentpage].size(); i ++){
             buttonGet(things[currentpage][i], W_WIDTH, W_HEIGHT, xmod, ymod);
@@ -924,14 +926,14 @@ void Inventory::buttonfunction(int &num){
         if (octave >3) octave--;
         nextdown.extra+="note:"+note+itostring(octave)+";";
     } else if (num == 31){
-        if (theinstrument==9) {theinstrument=13;}
+        if (theinstrument==10) {theinstrument=13;}
         else if (theinstrument==13) {theinstrument=1;}
-        else if (theinstrument==1) {theinstrument=9;}
+        else if (theinstrument==1) {theinstrument=10;}
             nextdown.extra+="instrument:"+itostring(theinstrument)+";";
     } else if (num == 32){
-        if (theinstrument==9) {theinstrument=1;}
+        if (theinstrument==10) {theinstrument=1;}
         else if (theinstrument==1) {theinstrument=13;}
-        else if (theinstrument==13) {theinstrument=9;}
+        else if (theinstrument==13) {theinstrument=10;}
             nextdown.extra+="instrument:"+itostring(theinstrument)+";";
     } else if (num == 35){
         if (ballevery < 5){
