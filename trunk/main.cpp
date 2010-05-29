@@ -118,6 +118,7 @@ class Ball {
         int timer;
         int hittimer;
         bool justhit;
+        int blockid;
         int timednote;
         int bouncecount;
         int hitcycle;
@@ -161,6 +162,7 @@ class Ball {
             timer = 0;
             hittimer = 0;
             justhit = false;
+            blockid = -1;
             
             midiout->openPort(bid);
             // this is drop, duh.
@@ -193,6 +195,7 @@ class Ball {
             if (hittimer > 0){
                 if (hittimer == 1){
                     justhit = false;
+                    blockid = -1;
                 }
                 hittimer --;
             }
@@ -255,7 +258,7 @@ class Ball {
             cout << note["F#2"] << "f#2\n";
         }
         
-        void hit(){
+        void hit(int theid){
             //cout << "Told to hit! " << bid << "\n";
             //play the relevant note
             //cout << "BOING\n";
@@ -290,6 +293,7 @@ class Ball {
             timer = 40;//remember 60fps.
             hittimer = 5;
             justhit = true;
+            blockid = theid;
             
             timednote = mynote;
 
@@ -544,7 +548,8 @@ class Tile {
         int binstrument;
         int switches;
         bool ghosthitlastframe;
-        
+        bool justhit;
+        int hittimer;
         float glow[3];
         
         string extra;
@@ -596,6 +601,10 @@ class Tile {
             binstrument = -1;
             switches = 0;
             ghosthitlastframe = false;
+            
+            justhit = false;
+            hittimer = 0;
+            
             
             if (hitstodestroy != 0){
                 glow[0] = 0.0;
@@ -820,7 +829,6 @@ class Tile {
                 float newyv=0.0;
                 float lineangle=0.0;
                 float speed = 0.0;
-                bool hit = false;
                 
                 list<Ball>::iterator ball;
                 for (ball = ball_list.begin(); ball != ball_list.end(); ball++) {
@@ -876,7 +884,7 @@ class Tile {
                             newyv=0.0;// y velocities
                             
                             //cout << "pung (" << ball->getID() << ")\n";
-                            ball->hit();
+                            ball->hit(uid);
                             //cout << "speed: "<< ball->yv <<"\n";
                             
                             
@@ -942,15 +950,16 @@ class Tile {
                             //angle = pbang;
                         }
                         
-                                    hit = true;
+                                    
                     }
                     
                     
                     if (type == 2){
-                        if (!(ball->justhit) && gonnaCrash(elapsed_time, ballpos[0]-1, ballpos[1], ballpos[2], ballpos[3])){
+                        if (!(ball->justhit) && !justhit && gonnaCrash(elapsed_time, ballpos[0]-1, ballpos[1], ballpos[2], ballpos[3])){
                             //cout << "thock (" << ball->getID() << ")\n"; 
                             
-                                    hit = true;
+                                    justhit = true;
+                                    hittimer = 5;
                                     
                             if (func == 3){
                                 particles.add("schlup", x, y, 0, 0, 1.0, 0.0, 0.0);
@@ -971,11 +980,11 @@ class Tile {
                                 cout << "switch!\n";
                             }
                             if (ghost && !ghosthitlastframe && func == 0 && switches == 0){
-                                ball->hit();
+                                ball->hit(uid);
                             }
                         
                             if (!ghost){
-                                ball->hit();
+                                ball->hit(uid);
                                 hitGlow();
                                 //if (ballpos[3] >= ballpos[2]){//going faster in y than x
                                 //NOTE: can probably do this better somehow, what if it's flying sideways..?
@@ -1024,7 +1033,7 @@ class Tile {
                                     ball->setPos(ballpos[0], ballpos[1],   -(ballpos[2]+gravity), ballpos[3] );
                                 } */ 
                             } else {
-                                ghosthitlastframe = true;
+                                ghosthitlastframe = false;
                             }
                             
                             
@@ -1032,9 +1041,9 @@ class Tile {
                         }
                     }
                     
-                    if (ghosthitlastframe && !hit){
+                    /*if (ghosthitlastframe && !hit){
                         ghosthitlastframe = false;
-                    }
+                    }*/
                 }
                 
             }//if !0
@@ -1051,6 +1060,12 @@ class Tile {
         
             //check balls for collision here.
             checkCollision(elapsed_time);
+            if (hittimer >=1){
+                hittimer--;
+                if (hittimer == 0){
+                    justhit = false;
+                }
+            }
             
             if (func == 1) checkTimer(elapsed_time);
             
